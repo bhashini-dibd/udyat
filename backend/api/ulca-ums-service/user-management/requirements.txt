@@ -8,6 +8,12 @@ Flask-RESTful==0.3.8
 PyJWT==1.7.1
 pymongo==3.11.1
 requests==2.24.0
-uuid==1.30
 pycryptodome==3.17
+
+# Compatibility pins for Flask 1.1.x
+Jinja2<3.1
+MarkupSafe<2.1
+itsdangerous<2.1
+click<8.1
+Werkzeug<2.0
 
