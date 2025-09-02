@@ -3,6 +3,7 @@ from logging.config import dictConfig
 from models.model_metric_eval import ModelMetricEval
 from datasets import load_metric
 import numpy as np
+import os
 
 log = logging.getLogger('file')
 
@@ -13,7 +14,9 @@ class ASRCEREval(ModelMetricEval):
     """
 
     def __init__(self):
-        self.cer_score = load_metric('cer', revision="master")
+        #self.cer_score = load_metric('cer', revision="master")
+        cer_path = os.path.join(os.path.dirname(__file__), 'cer')
+        self.cer_score = load_metric(cer_path)
 
     def asr_metric_eval(self, ground_truth, machine_translation):
 

@@ -3,6 +3,7 @@ from logging.config import dictConfig
 from models.model_metric_eval import ModelMetricEval
 from datasets import load_metric
 import numpy as np
+import os
 
 log = logging.getLogger('file')
 
@@ -14,7 +15,9 @@ class TranslationChrfScoreEval(ModelMetricEval):
     """
 
     def __init__(self):
-        self.chrf_score = load_metric('chrf', revision='master')
+        #self.chrf_score = load_metric('chrf', revision='master')
+        chrf_path = os.path.join(os.path.dirname(__file__), 'chrf')
+        self.chrf_score = load_metric(chrf_path)
 
 
     def machine_translation_metric_eval(self, ground_truth, machine_translation,language):
