@@ -12,4 +12,4 @@ jiwer==2.3.0
 rouge_score==0.0.4
 indic-nlp-library==0.81
 sacremoses==0.0.46
-editdistance==0.5.3
+editdistance==0.8.1
