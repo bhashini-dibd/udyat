@@ -14,7 +14,7 @@ WORKDIR /app
 
 COPY requirements.txt .
 RUN python -m pip install --upgrade pip setuptools wheel && \
-    pip install --no-build-isolation -r requirements.txt
+    pip install --no-build-isolation -r requirements.txt -c constraints.txt
 
 COPY . .
 RUN python -m nltk.downloader wordnet
