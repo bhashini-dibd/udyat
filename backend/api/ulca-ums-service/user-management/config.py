@@ -2,7 +2,7 @@ import os
 import time
 
 #CROSS_MODULE_COMMON_CONFIGS
-MONGO_SERVER_HOST   =   os.environ.get('ULCA_MONGO_CLUSTER', 'mongodb://localhost:27017')#,localhost:27018/?replicaSet=foo
+MONGO_SERVER_HOST   =   os.environ.get('ULCA_MONGO_CLUSTER', 'mongodb://172.29.34.93:27017,172.29.34.6:27017,172.29.34.190:27017/')#,localhost:27018/?replicaSet=foo
 
 #MODULE-SPECIFIC-CONFIGS
 
@@ -48,7 +48,7 @@ if isinstance(MAX_API_KEY,str):
     MAX_API_KEY = int(MAX_API_KEY)
 
 #external file read configs
-ROLE_CODES_URL          =   os.environ.get('UMS_ROLE_CODES_URL','https://raw.githubusercontent.com/bhashini-dibd/ulca/zuul-gw/backend/api/ulca-zuul-api-gw/dev-configs/roles.json')
+ROLE_CODES_URL          =   os.environ.get('UMS_ROLE_CODES_URL','https://raw.githubusercontent.com/bhashini-dibd/udyat/main/backend/api/ulca-zuul-api-gw/dev-configs/roles.json')
 ROLE_CODES_DIR_PATH     =   os.environ.get('UMS_ROLE_DIR_PATH','/app/configs/') 
 ROLE_CODES_FILE_NAME    =   os.environ.get('UMS_ROLES_FILE_NAME','roles.json')
 
@@ -70,7 +70,7 @@ SENDER_USERNAME         =   os.environ.get('SENDER_USERNAME','None')
 USER_VERIFY_LINK_EXPIRY =   os.environ.get('ULCA_VERIFY_LINK_EXP_HRS',48)
 USER_API_KEY_EXPIRY     =   os.environ.get('ULCA_API_KEY_EXP_DAYS',30)
 #React-app base url
-BASE_URL                =   os.environ.get('ULCA_REACT_APP_BASE_URL','https://dev.ulcacontrib.org/')
+BASE_URL                =   os.environ.get('ULCA_REACT_APP_BASE_URL','https://meity-auth-test.ulcacontrib.org/')
 RESET_PWD_ENDPOINT      =   os.environ.get('ULCA_RESET_PWD_ENDPOINT','user/reset-password/')
 #dhruva data toggle patch request
 PATCH_URL               =   "https://api.dhruva.ai4bharat.org/auth/api-key/ulca"
