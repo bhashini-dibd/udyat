@@ -2,13 +2,14 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+	
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
 		<version>2.4.12</version>
-		<relativePath /> <!-- lookup parent from repository -->
+		<relativePath/> 
 	</parent>
 
 	<groupId>org.ulca</groupId>
@@ -26,7 +27,7 @@
 			<dependency>
 				<groupId>org.springframework.cloud</groupId>
 				<artifactId>spring-cloud-dependencies</artifactId>
-				<version>Hoxton.SR12</version>
+				<version>Hoxton.SR12</version> <!-- Compatible with Spring Boot 2.4.x -->
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
@@ -34,13 +35,6 @@
 	</dependencyManagement>
 
 	<dependencies>
-
-		<!-- Add Guava 19 explicitly -->
-		<dependency>
-			<groupId>com.google.guava</groupId>
-			<artifactId>guava</artifactId>
-			<!--<version>19.0</version>-->
-		</dependency>
 		<!-- Core Spring Boot -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -114,14 +108,22 @@
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
+
+		<!-- Commons IO -->
 		<dependency>
 			<groupId>commons-io</groupId>
 			<artifactId>commons-io</artifactId>
 			<version>2.16.1</version>
 		</dependency>
 
-	</dependencies>
+		<!-- Optional: Guava 30.x if needed -->
+		<dependency>
+			<groupId>com.google.guava</groupId>
+			<artifactId>guava</artifactId>
+			<version>30.1.1-jre</version>
+		</dependency>
 
+	</dependencies>
 
 	<build>
 		<plugins>
