@@ -2,12 +2,10 @@
 FROM docker.io/node:18-alpine AS build
 WORKDIR /app
 
-# Build args (set at docker build --build-arg ...)
-ARG REACT_APP_APIGW_BASE_URL=https://meity-auth.ulcacontrib.org
-ARG BASE_URL=https://bhashini.gov.in
-ARG APIGW_URL=https://meity-auth.ulcacontrib.org
+ARG REACT_APP_APIGW_BASE_URL=https://meity-auth-test.ulcacontrib.org
+ARG BASE_URL=https://udyat.bhashini.co.in/ulca
+ARG APIGW_URL=https://meity-auth-test.ulcacontrib.org
 
-# Make args available to build process
 ENV REACT_APP_APIGW_BASE_URL=${REACT_APP_APIGW_BASE_URL}
 ENV BASE_URL=${BASE_URL}
 ENV APIGW_URL=${APIGW_URL}
@@ -20,27 +18,29 @@ RUN if [ -f package-lock.json ]; then \
     fi
 
 COPY . .
-ENV NODE_OPTIONS=--openssl-legacy-provider
-RUN npm run build   # React → /app/build (or Vite → /app/dist)
+ENV NODE_OPTIONS="--openssl-legacy-provider"
+RUN npm run build
 
 # ---- Stage 2: Serve with Nginx ----
 FROM docker.io/nginx:1.25-alpine
 
-# Pass through same values as runtime ENV too
-ARG REACT_APP_APIGW_BASE_URL=https://meity-auth.ulcacontrib.org
-ARG BASE_URL=https://bhashini.gov.in
-ARG APIGW_URL=https://meity-auth.ulcacontrib.org
+ARG REACT_APP_APIGW_BASE_URL=https://meity-auth-test.ulcacontrib.org
+ARG BASE_URL=https://udyat.bhashini.co.in/ulca
+ARG APIGW_URL=https://meity-auth-test.ulcacontrib.org
 
 ENV REACT_APP_APIGW_BASE_URL=${REACT_APP_APIGW_BASE_URL}
 ENV BASE_URL=${BASE_URL}
 ENV APIGW_URL=${APIGW_URL}
 
-# Copy build output (adjust to /app/dist if Vite)
+# Optional: install curl for healthcheck (busybox wget isn't always present)
+RUN apk add --no-cache curl
+
 COPY --from=build /app/build /usr/share/nginx/html
 
 COPY ./nginx_fe_dev.conf /etc/nginx/conf.d/default.conf
 COPY ./env-export.sh /docker-entrypoint.d/10-env-export.sh
 RUN chmod +x /docker-entrypoint.d/10-env-export.sh
 
-HEALTHCHECK CMD wget -qO- http://127.0.0.1/ >/dev/null 2>&1 || exit 1
+EXPOSE 80
+HEALTHCHECK --interval=30s --timeout=3s --retries=3 CMD curl -fsS http://127.0.0.1/ >/dev/null || exit 1
 
