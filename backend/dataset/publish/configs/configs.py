@@ -6,7 +6,7 @@ redis_server_host = os.environ.get('REDIS_URL', 'localhost')
 redis_server_port = os.environ.get('REDIS_PORT', 6379)
 redis_server_pass = os.environ.get('REDIS_PASS', None)
 
-db_cluster = os.environ.get('ULCA_DS_PUBLISH_MONGO_CLUSTER', "mongodb://10.30.11.136:27017/")
+db_cluster = os.environ.get('ULCA_DS_PUBLISH_MONGO_CLUSTER', "mongodb://dhruva:tiger89moon@172.29.34.93:27017,172.29.34.6:27017,172.30.34.190:27017/")
 #db_cluster = os.environ.get('ULCA_DS_PUBLISH_MONGO_CLUSTER', "mongodb://127.0.0.1:27017/")
 db = os.environ.get('ULCA_DS_PUBLISH_DB', "ulca")
 asr_collection = os.environ.get('ULCA_DS_PUBLISH_ASR_COL', "asr-dataset")
@@ -123,6 +123,7 @@ glossary_updatable_keys = ["alignmentScore", "version"]
 ner_immutable_keys = ["_id", "id", "sourceText", "targetText", "sourceTextHash", "targetTextHash",
                            "sourceLanguage", "targetLanguage", "datasetType", "lastModifiedOn", "createdOn","sourceScriptCode","targetScriptCode"]
 ner_non_tag_keys = ["_id", "id", "alignmentScore", "sourceText", "targetText", "submitter", "lastModifiedOn",
+
                          "createdOn"]
 ner_search_ignore_keys = ["_id", "id", "tags", "datasetType", "hashedKey", "sk",
                                "derived", "sourceTextHash", "targetTextHash", "lastModifiedOn", "createdOn", "version",
@@ -156,13 +157,13 @@ pt_inprogress_status = os.environ.get('STATUS_INPROGRESS', 'In-Progress')
 pt_success_status = os.environ.get('STATUS_COMPLETED', 'Completed')
 pt_failed_status = os.environ.get('STATUS_FAILED', 'Failed')
 
-ulca_db_cluster = os.environ.get('ULCA_MONGO_CLUSTER', "mongodb://localhost:27017/")
+ulca_db_cluster = os.environ.get('ULCA_MONGO_CLUSTER', "mongodb://dhruva:tiger89moon@172.29.34.93:27017,172.29.34.6:27017,172.30.34.190:27017/")
 pt_db = os.environ.get('ULCA_PROC_TRACKER_DB', "ulca-process-tracker")
 pt_task_collection = os.environ.get('ULCA_PROC_TRACKER_TASK_COL', "ulca-pt-tasks")
 error_db = os.environ.get('ULCA_ERROR_DB', "ulca-error")
 error_collection = os.environ.get('ULCA_ERROR_COL', "errors")
 
-kafka_bootstrap_server_host = os.environ.get('KAFKA_ULCA_BOOTSTRAP_SERVER_HOST', 'localhost:9092')
+kafka_bootstrap_server_host = os.environ.get('KAFKA_ULCA_BOOTSTRAP_SERVER_HOST', 'debezium-cluster-kafka-bootstrap.kafka.svc.cluster.local:9092')
 publish_input_topic = os.environ.get('KAFKA_ULCA_DS_PUBLISH_IP_TOPIC', 'ulca-ds-publish-ip-v0')
 search_input_topic = os.environ.get('KAFKA_ULCA_DS_SEARCH_IP_TOPIC', 'ulca-ds-search-ip-v0')
 delete_input_topic = os.environ.get('KAFKA_ULCA_DS_DELETE_IP_TOPIC', 'ulca-ds-delete-ip-v0')
@@ -198,7 +199,7 @@ dataset_type_ner = os.environ.get('DS_TYPE_NER', 'ner-corpus')
 user_mode_pseudo = os.environ.get('USER_MODE_PSEUDO', 'precheck')
 user_mode_real = os.environ.get('USER_MODE_REAL', 'real')
 
-file_store_host = os.environ.get('ULCA_FILE_STORE_SERVER_URL', 'http://file-store:5001')
+file_store_host = os.environ.get('ULCA_FILE_STORE_SERVER_URL', 'http://file-store-service.file-store.svc.cluster.local')
 file_store_upload_endpoint = os.environ.get('ULCA_FILE_STORE_UPLOAD', '/ulca/file-store/v0/file/upload')
 file_store_delete_endpoint = os.environ.get('ULCA_FILE_STORE_REMOVE', '/ulca/file-store/v0/file/remove')
 
