@@ -32,7 +32,7 @@ process_db                              =   os.environ.get('PROCESS_DB', "ulca-p
 process_collection                      =   os.environ.get('PROCESS_COL', "ulca-pt-processes")
 
 #file-store service endpoints
-file_store_host                         =   os.environ.get('ULCA_FILE_STORE_SERVER_URL', 'http://file-store:5001')
+file_store_host                         =   os.environ.get('ULCA_FILE_STORE_SERVER_URL', 'http://file-store-service.file-store.svc.cluster.local')
 file_store_upload_endpoint              =   os.environ.get('ULCA_FILE_STORE_UPLOAD', '/ulca/file-store/v0/file/upload')
 file_store_delete_endpoint              =   os.environ.get('ULCA_FILE_STORE_REMOVE', '/ulca/file-store/v0/file/remove')
 
