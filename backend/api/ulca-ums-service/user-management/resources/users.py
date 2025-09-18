@@ -472,11 +472,12 @@ class ToggleDataTracking(Resource):
         patch_url = pipeline_doc["apiEndPoints"]["apiKeyUrl"]
         decrypt_headers = UserUtils.decryptAes(SECRET_KEY,pipeline_masterkeys)
         
+        req_body = {"emailId" : userEmail, "appName" :  appName_,'dataTracking' : boole}
+
         log.info(f"PATCH Request URL: {patch_url}")
         log.info(f"PATCH Request Headers: {decrypt_headers}")
         log.info(f"PATCH Request Body: {req_body}")
 
-        req_body = {"emailId" : userEmail, "appName" :  appName_,'dataTracking' : boole}
         patch_req = requests.patch(url = patch_url, headers=decrypt_headers, json=req_body)
 
         log.info(f"PATCH Response Status: {patch_req.status_code}")
