@@ -471,9 +471,22 @@ class ToggleDataTracking(Resource):
         pipeline_masterkeys.append(pipeline_doc['inferenceEndPoint']['masterApiKey']['value'])
         patch_url = pipeline_doc["apiEndPoints"]["apiKeyUrl"]
         decrypt_headers = UserUtils.decryptAes(SECRET_KEY,pipeline_masterkeys)
+        
+        log.info(f"PATCH Request URL: {patch_url}")
+        log.info(f"PATCH Request Headers: {decrypt_headers}")
+        log.info(f"PATCH Request Body: {req_body}")
+
         req_body = {"emailId" : userEmail, "appName" :  appName_,'dataTracking' : boole}
         patch_req = requests.patch(url = patch_url, headers=decrypt_headers, json=req_body)
-        log.info(f"Patch Request Response :: {patch_req}...............{patch_req.json()} .............{patch_req.status_code}")
+
+        log.info(f"PATCH Response Status: {patch_req.status_code}")
+        log.info(f"PATCH Response Headers: {patch_req.headers}")
+        try:
+          log.info(f"PATCH Response JSON: {patch_req.json()}")
+        except ValueError:
+          log.info(f"PATCH Response Text: {patch_req.text}")
+
+          log.info(f"Patch Request Response :: {patch_req}...............{patch_req.json()} .............{patch_req.status_code}")
         if (patch_req.json()['status']) == 'success':
             toggled_matched, toggle_modified = UserUtils.updateDataTrackingValuePull(body['userID'], body['ulcaApiKey'], body['serviceProviderName'], boole)
             if toggle_modified == 1:
