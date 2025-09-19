@@ -158,8 +158,11 @@ class ParallelRepo:
                 pipeline = []
                 pipeline.append({"$match": {"tags": query}})
                 pipeline.append({"$project": {"_id": 0}})
+            log.info(f'pipeline query :: {pipeline}')    
             res = col.aggregate(pipeline, allowDiskUse=True)
-            log.info(f'aggregate query result :: {res}')
+
+            res_list = list(res)
+            log.info(f'aggregate query result :: {res_list}')
             if query['groupBy']:
                 if res:
                     hashes = []
