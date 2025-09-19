@@ -159,6 +159,7 @@ class ParallelRepo:
                 pipeline.append({"$match": {"tags": query}})
                 pipeline.append({"$project": {"_id": 0}})
             res = col.aggregate(pipeline, allowDiskUse=True)
+            log.info(f'aggregate query result :: {res}')
             if query['groupBy']:
                 if res:
                     hashes = []
@@ -172,6 +173,7 @@ class ParallelRepo:
                         for key in parallel_search_ignore_keys:
                             project[key] = False
                         res = col.find({"sourceTextHash": {"$in": hashes}}, project)
+                        log.info(f'sourceTextHash query result :: {res}')
                     if not res:
                         return result, pipeline, res_count
                     map, tgt_lang = {}, []
