@@ -1,7 +1,7 @@
 import time
 import logging
 from logging.config import dictConfig
-from configs.configs import MAIL_SENDER
+from configs.configs import MAIL_SENDER,MAIL_SETTINGS
 from app import mail
 from flask_mail import Mail, Message
 from flask import render_template
@@ -16,6 +16,14 @@ class NotifierUtils:
     
     def generate_email_notification(self,template,template_vars,receiver_list,subject):
         log.info("Generating email.........")
+        log.info("MAIL_SERVER   = %s", MAIL_SETTINGS["MAIL_SERVER"])
+        log.info("MAIL_PORT     = %s", MAIL_SETTINGS["MAIL_PORT"])
+        log.info("MAIL_USE_TLS  = %s", MAIL_SETTINGS["MAIL_USE_TLS"])
+        log.info("MAIL_USE_SSL  = %s", MAIL_SETTINGS["MAIL_USE_SSL"])
+        log.info("MAIL_USERNAME = %s", MAIL_SETTINGS["MAIL_USERNAME"])
+        log.info("MAIL_PASSWORD = %s", "******" if MAIL_SETTINGS["MAIL_PASSWORD"] else None)
+        log.info("MAIL_SENDER   = %s", MAIL_SENDER)
+
         timestamp   =   eval(str(time.time()).replace('.', '')[0:13])
         try:
             msg = Message(subject=subject,sender=MAIL_SENDER,recipients=receiver_list)
