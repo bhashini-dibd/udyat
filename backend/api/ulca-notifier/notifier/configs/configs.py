@@ -27,8 +27,8 @@ ds_search_list_endpoint                 =   os.environ.get('ULCA_DS_MYSEARCHES_P
 MAIL_SETTINGS                           =   {
                                                 "MAIL_SERVER"   : os.environ.get('ULCA_EMAIL_SERVER','smtp.gmail.com'),
                                                 "MAIL_PORT"     : eval(os.environ.get('ULCA_EMAIL_SECURE_PORT','587')),
-                                                "MAIL_USE_TLS"  : False,
-                                                "MAIL_USE_SSL"  : True,
+                                                "MAIL_USE_TLS"  : True,
+                                                "MAIL_USE_SSL"  : False,
                                                 "MAIL_USERNAME" : os.environ.get('ULCA_EMAIL','xxxxxxxxxx'),
                                                 "MAIL_PASSWORD" : os.environ.get('ULCA_EMAIL_PASSWORD','xxxxxxx')
                                              }
