@@ -43,7 +43,7 @@ class TTSRepo:
     def instantiate(self):
         global mongo_instance_tts
         log.info(f'db_cluster :: {db_cluster}')
-        log(f'databas : {db} and collection :: {tts_collection}')
+        log.info(f'databas : {db} and collection :: {tts_collection}')
         client = pymongo.MongoClient(db_cluster)
         mongo_instance_tts = client[db][tts_collection]
         return mongo_instance_tts
