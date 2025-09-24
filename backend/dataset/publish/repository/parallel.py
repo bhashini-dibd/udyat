@@ -161,8 +161,6 @@ class ParallelRepo:
             log.info(f'pipeline query :: {pipeline}')    
             res = col.aggregate(pipeline, allowDiskUse=True)
 
-            res_list = list(res)
-            log.info(f'aggregate query result :: {res_list}')
             if query['groupBy']:
                 if res:
                     hashes = []
