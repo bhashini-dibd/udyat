@@ -70,7 +70,7 @@ SENDER_USERNAME         =   os.environ.get('SENDER_USERNAME','None')
 USER_VERIFY_LINK_EXPIRY =   os.environ.get('ULCA_VERIFY_LINK_EXP_HRS',48)
 USER_API_KEY_EXPIRY     =   os.environ.get('ULCA_API_KEY_EXP_DAYS',30)
 #React-app base url
-BASE_URL                =   os.environ.get('ULCA_REACT_APP_BASE_URL','https://meity-auth-test.ulcacontrib.org/')
+BASE_URL                =   os.environ.get('ULCA_REACT_APP_BASE_URL','https://meity-auth.ulcacontrib.org/')
 RESET_PWD_ENDPOINT      =   os.environ.get('ULCA_RESET_PWD_ENDPOINT','user/reset-password/')
 #dhruva data toggle patch request
 PATCH_URL               =   "https://api.dhruva.ai4bharat.org/auth/api-key/ulca"

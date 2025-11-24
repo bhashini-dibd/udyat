@@ -2,9 +2,9 @@
 FROM docker.io/node:18-alpine AS build
 WORKDIR /app
 
-ARG REACT_APP_APIGW_BASE_URL=https://meity-auth-test.ulcacontrib.org
-ARG BASE_URL=https://udyat.bhashini.co.in/ulca
-ARG APIGW_URL=https://meity-auth-test.ulcacontrib.org
+ARG REACT_APP_APIGW_BASE_URL=https://meity-auth.ulcacontrib.org
+ARG BASE_URL=https://bhashini.gov.in/ulca
+ARG APIGW_URL=https://meity-auth.ulcacontrib.org
 
 ENV REACT_APP_APIGW_BASE_URL=${REACT_APP_APIGW_BASE_URL}
 ENV BASE_URL=${BASE_URL}
@@ -24,9 +24,9 @@ RUN npm run build
 # ---- Stage 2: Serve with Nginx ----
 FROM docker.io/nginx:1.25-alpine
 
-ARG REACT_APP_APIGW_BASE_URL=https://meity-auth-test.ulcacontrib.org
-ARG BASE_URL=https://udyat.bhashini.co.in/ulca
-ARG APIGW_URL=https://meity-auth-test.ulcacontrib.org
+ARG REACT_APP_APIGW_BASE_URL=https://meity-auth.ulcacontrib.org
+ARG BASE_URL=https://bhashini.gov.in/ulca
+ARG APIGW_URL=https://meity-auth.ulcacontrib.org
 
 ENV REACT_APP_APIGW_BASE_URL=${REACT_APP_APIGW_BASE_URL}
 ENV BASE_URL=${BASE_URL}
