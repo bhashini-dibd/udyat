@@ -23,8 +23,9 @@ yotta_download_endpoint =   os.environ.get('ULCA_YOTTA_DOWNLOAD_ENDPOINT_URL', '
 yotta_access_key        =   os.environ.get('ULCA_YOTTA_ACCESS_KEY', 'access-key')
 yotta_secret_key        =   os.environ.get('ULCA_YOTTA_SECRET_KEY', 'secret-key')
 yotta_bucket_name       =   os.environ.get('ULCA_YOTTA_BUCKET_NAME', 'ulcauatdsamba')
+yotta_file_prefix       =   os.environ.get('ULCA_YOTTA_FILE_PREFIX', '')
 yotta_region_name       =   os.environ.get('ULCA_YOTTA_REGION_NAME', 'us-east-1')
-yotta_link_prefix       =   f'{yotta_download_endpoint}/{yotta_bucket_name}/'
+yotta_link_prefix       =   f'{yotta_download_endpoint}/{yotta_bucket_name}/{yotta_file_prefix}'
 
 
 

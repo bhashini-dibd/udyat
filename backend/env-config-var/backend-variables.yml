@@ -26,16 +26,28 @@ ULCA_YOTTA_DOWNLOAD_ENDPOINT_URL='https://bhashinimigrationns.sosnm1.shakticloud
 ULCA_YOTTA_ACCESS_KEY='access-key'
 ULCA_YOTTA_SECRET_KEY='secret-key'
 ULCA_YOTTA_BUCKET_NAME='ulcauatdsamba'
+ULCA_YOTTA_FILE_PREFIX='samba-share'
 ULCA_YOTTA_REGION_NAME='us-east-1'
 
 # Keep ULCA_OBJECT_STORE as 'AZURE' for backward compatibility with routing logic
 ULCA_OBJECT_STORE='AZURE'
 
-# Yotta Bucket Options:
-# - UAT: ULCA_YOTTA_BUCKET_NAME='ulcauatdsamba'
-# - Production: ULCA_YOTTA_BUCKET_NAME='ulcaproduction'
-# - ML Models: ULCA_YOTTA_BUCKET_NAME='ulcamodels'
-# - Bhashini Web: ULCA_YOTTA_BUCKET_NAME='bhashiniwebtransstorage'
+# Yotta Bucket and Prefix Options:
+# - UAT/Staging:
+#   ULCA_YOTTA_BUCKET_NAME='ulcauatdsamba'
+#   ULCA_YOTTA_FILE_PREFIX='samba-share'
+# - Production:
+#   ULCA_YOTTA_BUCKET_NAME='ulcaproduction'
+#   ULCA_YOTTA_FILE_PREFIX='ulca-prod-container'
+# - Production Samba:
+#   ULCA_YOTTA_BUCKET_NAME='ulcaproduction'
+#   ULCA_YOTTA_FILE_PREFIX='samba-share'
+# - ML Models:
+#   ULCA_YOTTA_BUCKET_NAME='ulcamodels'
+#   ULCA_YOTTA_FILE_PREFIX=''
+# - Bhashini Web:
+#   ULCA_YOTTA_BUCKET_NAME='bhashiniwebtransstorage'
+#   ULCA_YOTTA_FILE_PREFIX=''
 # All buckets use same endpoint: sosnm1.shakticloud.ai:9024
 
 KAFKA_ULCA_DS_TOPIC_PARTITIONS='16'

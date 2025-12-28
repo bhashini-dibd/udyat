@@ -3,7 +3,7 @@ from threading import Thread
 import logging
 import boto3
 from botocore.config import Config
-from config import yotta_upload_endpoint, yotta_download_endpoint, yotta_access_key, yotta_secret_key, yotta_bucket_name, yotta_region_name, yotta_link_prefix, download_folder
+from config import yotta_upload_endpoint, yotta_download_endpoint, yotta_access_key, yotta_secret_key, yotta_bucket_name, yotta_file_prefix, yotta_region_name, yotta_link_prefix, download_folder
 from utilities import post_error
 import os
 
@@ -61,7 +61,14 @@ class AzureFileRepo():
         Returns:
             str: Public URL to uploaded file
         """
-        blob_file_name = folder + "/" + file_name
+        # Construct S3 object key with file prefix
+        if yotta_file_prefix:
+            # Remove trailing slash from prefix if present, we'll add it back
+            prefix = yotta_file_prefix.rstrip('/')
+            blob_file_name = f"{prefix}/{folder}/{file_name}"
+        else:
+            blob_file_name = f"{folder}/{file_name}"
+
         log.info(f'Pushing {file_path} to Yotta S3 at {blob_file_name} on a new fork......')
         persister = threading.Thread(target=self.upload_file, args=(self.s3_upload_client, file_path, blob_file_name))
         persister.start()
