@@ -21,9 +21,7 @@ class AzureFileRepo():
         """Initialize separate S3 clients for upload and download operations"""
         # Common configuration for both clients
         s3_config = Config(
-            signature_version="s3v4",
-            request_checksum_calculation="when_required",
-            response_checksum_validation="when_required"
+            signature_version="s3v4"
         )
 
         # Upload client (uses upload endpoint)
