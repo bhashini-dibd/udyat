@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: asr-model-compute-deployment
+  namespace: asr-model-compute
+  labels:
+    app: asr-model-compute
+    env: prod
+spec:
+  replicas: 2
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+  selector:
+    matchLabels:
+      app: asr-model-compute
+  template:
+    metadata:
+      labels:
+        app: asr-model-compute
+    spec:
+      containers:
+      - name: asr-model-compute
+        image: registryharbor.bhashini.co.in/bhashini/udyat-prod/asr-model-compute:1
+        ports:
+        - containerPort: 5001
+        resources:
+          limits:
+            cpu: "4"
+            memory: "4Gi"
+          requests:
+            cpu: "1"
+            memory: "2Gi"
+        env:
+        - name: API_SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: model-api-key
+              key: MODEL_APIKEY_SECRETKEY
+        envFrom:
+        - secretRef:
+            name: common-secret
+        volumeMounts:
+            - name: model-dir
+              mountPath: /opt/
+      volumes:
+        - name: model-dir
+          nfs:
+            server: 172.29.128.226
+            path: /u01/nfs
