@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: zuul-gw-deployment
+  namespace: zuul-gw
+  labels:
+    app: zuul-gw
+    env: prod
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: zuul-gw
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+  template:
+    metadata:
+      labels:
+        app: zuul-gw
+        env: prod
+    spec:
+      terminationGracePeriodSeconds: 30
+      containers:
+        - name: zuul-gw
+          image: registryharbor.bhashini.co.in/bhashini/udyat-prod/zuul-gw:21
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+          envFrom:
+            - secretRef:
+                name: common-secret
+          resources:
+            requests:
+              cpu: "1"
+              memory: "2Gi"
+            limits:
+              cpu: "8"
+              memory: "8Gi"
