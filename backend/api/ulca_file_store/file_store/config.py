@@ -17,11 +17,15 @@ aws_secret_key          =   os.environ.get('ULCA_AWS_S3_SECRET_KEY', 'secret-key
 aws_bucket_name         =   os.environ.get('ULCA_AWS_BUCKET_NAME', 'ulca-datasets')
 aws_link_prefix         =   f'https://{aws_bucket_name}.s3.amazonaws.com/'
 
-#azure configs
-azure_connection_string =   os.environ.get('ULCA_AZURE_CONNECTION_STRING',"connection_string")
-azure_container_name    =   os.environ.get('ULCA_AZURE_FILE_CONTAINER',"container_name")
-azure_account_name      =   os.environ.get('ULCA_AZURE_ACCOUNT_NAME', "account_name")
-azure_link_prefix       =   f'https://{azure_account_name}.blob.core.windows.net/{azure_container_name}/'
+#yotta s3-compatible configs (replaces azure)
+yotta_upload_endpoint   =   os.environ.get('ULCA_YOTTA_UPLOAD_ENDPOINT_URL', 'https://sosnm1.shakticloud.ai:9024')
+yotta_download_endpoint =   os.environ.get('ULCA_YOTTA_DOWNLOAD_ENDPOINT_URL', 'https://bhashinimigrationns.sosnm1.shakticloud.ai:9024/')
+yotta_access_key        =   os.environ.get('ULCA_YOTTA_ACCESS_KEY', 'access-key')
+yotta_secret_key        =   os.environ.get('ULCA_YOTTA_SECRET_KEY', 'secret-key')
+yotta_bucket_name       =   os.environ.get('ULCA_YOTTA_BUCKET_NAME', 'ulcauatdsamba')
+yotta_file_prefix       =   os.environ.get('ULCA_YOTTA_FILE_PREFIX', '')
+yotta_region_name       =   os.environ.get('ULCA_YOTTA_REGION_NAME', 'us-east-1')
+yotta_link_prefix       =   f'{yotta_download_endpoint.rstrip("/")}/{yotta_bucket_name}/'
 
 
 

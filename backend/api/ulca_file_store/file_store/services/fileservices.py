@@ -19,7 +19,7 @@ class FileServices():
             log.info("objectStore ----------- AWS")
             return awsrepo.upload_file_to_s3(file_path,file_name,folder)
         elif config.object_store == "AZURE":
-            log.info("objectStore ----------- AZURE")
+            log.info("objectStore ----------- Yotta")
             return  azurerepo.upload_file_to_blob(file_path,file_name,folder)
 
     #choosing donload mechanism as per config
@@ -28,8 +28,8 @@ class FileServices():
             log.info("objectStore ------------ AWS")
             return awsrepo.download_file_from_s3(file_name)
         elif config.object_store == "AZURE":
-            log.info("objectStore ----------- AZURE")
-            return  azurerepo.upload_file_to_blob(file_name)
+            log.info("objectStore ----------- Yotta")
+            return  azurerepo.download_file_from_blob(file_name)
 
     #choosing delete mechanism as per config
     def remove_file(self,file_name):
@@ -37,7 +37,7 @@ class FileServices():
             log.info("objectStore ------------- AWS")
             return awsrepo.remove_file_from_s3(file_name)
         elif config.object_store == "AZURE":
-            log.info("objectStore ----------- AZURE")
+            log.info("objectStore ----------- Yotta")
             return  azurerepo.remove_file_from_blob(file_name)
             
 
