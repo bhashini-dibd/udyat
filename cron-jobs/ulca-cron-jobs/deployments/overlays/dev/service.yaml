@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: cron-jobs-service
+  namespace: cron-jobs
+  labels:
+    app: cron-jobs
+spec:
+  type: ClusterIP
+  selector:
+    app: cron-jobs
+  ports:
+    - name: http
+      port: 80
+      targetPort: 5001
