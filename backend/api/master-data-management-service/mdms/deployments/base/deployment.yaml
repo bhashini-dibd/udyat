@@ -1,1 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: master-data-management-deployment
+  namespace: master-data-management
+  labels:
+    app: master-data-management
+    env: prod
+spec:
+  replicas: 2
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+  selector:
+    matchLabels:
+      app: master-data-management
+  template:
+    metadata:
+      labels:
+        app: master-data-management
+    spec:
+      containers:
+      - name: master-data-management
+        image: registryharbor.bhashini.co.in/bhashini/udyat-prod/master-data-management:1
+        ports:
+        - containerPort: 5001
+        resources:
+          limits:
+            cpu: "4"
+            memory: "4Gi"
+          requests:
+            cpu: "1"
+            memory: "2Gi"
+        envFrom:
+        - secretRef:
+            name: common-secret
 
