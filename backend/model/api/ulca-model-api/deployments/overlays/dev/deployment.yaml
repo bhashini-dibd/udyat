@@ -1,0 +1,62 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: model-api-deployment
+  namespace: model-api
+  labels:
+    app: model-api
+    env: prod
+spec:
+  replicas: 2
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+  selector:
+    matchLabels:
+      app: model-api
+  template:
+    metadata:
+      labels:
+        app: model-api
+    spec:
+      containers:
+      - name: model-api
+        image: registryharbor.bhashini.co.in/bhashini/udyat-prod/model-api:2
+        ports:
+        - containerPort: 8080
+        resources:
+          limits:
+            cpu: "4"
+            memory: "4Gi"
+          requests:
+            cpu: "500m"
+            memory: "1Gi"
+        env:
+        - name: AES_MODEL_APIKEY_SECRETKEY
+          valueFrom:
+            secretKeyRef:
+              name: model-api-key
+              key: MODEL_APIKEY_SECRETKEY
+        - name: aes.secret.key1
+          value: "b4be0986-dfa2-4ca0-8945-ce6e05ac713b"
+        - name: aes.secret.key2
+          value: "e294b2b0-272c-4d8c-adb7-8d0f6cefe523"
+        - name: userId
+          value: "6a73afa4fc774dcdb28d5fff944511f6"
+        - name: ulca.apikey1
+          value: "5293e934c3-986e-40c0-bebb-8270cffacaca"
+        - name: ulca.apikey2
+          value: "35764737a9-3a15-4e9c-ad95-c7b69fe22qqq"
+        envFrom:
+        - secretRef:
+            name: common-secret
+        volumeMounts:
+            - name: model-dir
+              mountPath: /opt
+      volumes:
+        - name: model-dir
+          nfs:
+            server: 172.29.128.226
+            path: /u01/nfs
