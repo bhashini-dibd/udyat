@@ -5,9 +5,9 @@ metadata:
   namespace: error-consumer
   labels:
     app: error-consumer
-    env: prod
+    env: dev
 spec:
-  replicas: 2
+  replicas: 1
   strategy:
     type: RollingUpdate
     rollingUpdate:
@@ -23,13 +23,13 @@ spec:
     spec:
       containers:
       - name: error-consumer
-        image: registryharbor.bhashini.co.in/bhashini/udyat-prod/error-consumer:3
+        image: registryharbor.bhashini.co.in/bhashini/udyat-dev/error-consumer:3
         ports:
         - containerPort: 5001
         resources:
           limits:
-            cpu: "4"
-            memory: "4Gi"
+            cpu: "3"
+            memory: "3Gi"
           requests:
             cpu: "1"
             memory: "2Gi"
@@ -93,3 +93,4 @@ spec:
         nfs:
           server: 172.29.128.226
           path: /u01/nfs
+
