@@ -5,9 +5,9 @@ metadata:
   namespace: dataset-api
   labels:
     app: dataset-api
-    env: prod
+    env: dev
 spec:
-  replicas: 2
+  replicas: 1
   strategy:
     type: RollingUpdate
     rollingUpdate:
@@ -56,7 +56,7 @@ spec:
 
       containers:
       - name: dataset-api
-        image: registryharbor.bhashini.co.in/bhashini/udyat-prod/dataset-api:1
+        image: registryharbor.bhashini.co.in/bhashini/udyat-dev/dataset-api:1
         imagePullPolicy: Always
         ports:
         - containerPort: 8080
@@ -89,3 +89,4 @@ spec:
           readOnly: false
       - name: jre-overlay
         emptyDir: {}
+
