@@ -1,0 +1,91 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dataset-ingest-deployment
+  namespace: dataset-ingest
+  labels:
+    app: dataset-ingest
+    env: prod
+spec:
+  replicas: 6
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+  selector:
+    matchLabels:
+      app: dataset-ingest
+  template:
+    metadata:
+      labels:
+        app: dataset-ingest
+    spec:
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+        fsGroupChangePolicy: "OnRootMismatch"
+
+      initContainers:
+      - name: prepare-jre
+        image: docker.io/eclipse-temurin:11-jre
+        imagePullPolicy: IfNotPresent
+        securityContext:
+          runAsUser: 0
+          runAsGroup: 0
+        command: ["/bin/sh","-lc"]
+        args:
+          - |
+            set -e
+            mkdir -p /jre
+            # Find JRE in this image
+            SRC=""
+            for C in /opt/java/openjdk /usr/lib/jvm/* /usr/lib/jvm/java-11-openjdk*; do
+              if [ -x "$C/bin/java" ]; then SRC="$C"; break; fi
+            done
+            [ -n "$SRC" ] || { echo "No JRE found in base image"; exit 1; }
+            echo "Using JRE at $SRC"
+            # Copy without preserving root ownership
+            cp -r "$SRC"/. /jre/
+            chown -R 1000:1000 /jre
+            /jre/bin/java -version
+        volumeMounts:
+        - name: jre-overlay
+          mountPath: /jre
+
+      containers:
+      - name: dataset-ingest
+        image: registryharbor.bhashini.co.in/bhashini/udyat-prod/dataset-ingest:1
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8080
+        resources:
+          requests:
+            cpu: "1"
+            memory: "2Gi"
+          limits:
+            cpu: "2"
+            memory: "4Gi"
+        envFrom:
+        - secretRef:
+            name: common-secret
+        env:
+        - name: JAVA_HOME
+          value: /opt/java
+        - name: PATH
+          value: /opt/java/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+        volumeMounts:
+        - name: model-dir
+          mountPath: /opt
+        - name: jre-overlay
+          mountPath: /opt/java
+
+      volumes:
+      - name: model-dir
+        nfs:
+          server: 172.29.128.226
+          path: /u01/nfs
+          readOnly: false
+      - name: jre-overlay
+        emptyDir: {}
