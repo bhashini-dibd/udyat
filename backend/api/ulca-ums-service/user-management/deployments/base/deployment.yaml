@@ -7,7 +7,7 @@ metadata:
     app: ums
     env: prod
 spec:
-  replicas: 2
+  replicas: 3
   strategy:
     type: RollingUpdate
     rollingUpdate:
@@ -31,7 +31,7 @@ spec:
             cpu: "4"
             memory: "4Gi"
           requests:
-            cpu: "1"
+            cpu: "2"
             memory: "2Gi"
         env:
         - name: API_SECRET_KEY
@@ -44,3 +44,4 @@ spec:
             name: common-secret
         - secretRef:
             name: smtp-creds
+
