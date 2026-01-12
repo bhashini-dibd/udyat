@@ -5,7 +5,7 @@ metadata:
   namespace: ums
   labels:
     app: ums
-    env: prod
+    env: dev
 spec:
   replicas: 2
   strategy:
@@ -23,13 +23,13 @@ spec:
     spec:
       containers:
       - name: ums
-        image: registryharbor.bhashini.co.in/bhashini/udyat-prod/ums:5
+        image: registryharbor.bhashini.co.in/bhashini/udyat-dev/ums:5
         ports:
         - containerPort: 5001
         resources:
           limits:
-            cpu: "4"
-            memory: "4Gi"
+            cpu: "3"
+            memory: "3Gi"
           requests:
             cpu: "1"
             memory: "2Gi"
@@ -44,3 +44,4 @@ spec:
             name: common-secret
         - secretRef:
             name: smtp-creds
+
