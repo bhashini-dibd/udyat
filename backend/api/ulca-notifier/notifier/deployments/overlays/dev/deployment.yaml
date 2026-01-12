@@ -5,9 +5,9 @@ metadata:
   namespace: notifier-service
   labels:
     app: notifier-service
-    env: prod
+    env: dev
 spec:
-  replicas: 2
+  replicas: 1
   strategy:
     type: RollingUpdate
     rollingUpdate:
@@ -23,13 +23,13 @@ spec:
     spec:
       containers:
       - name: notifier-service
-        image: registryharbor.bhashini.co.in/bhashini/udyat-prod/notifier-service:6
+        image: registryharbor.bhashini.co.in/bhashini/udyat-dev/notifier-service:6
         ports:
         - containerPort: 5001
         resources:
           limits:
-            cpu: "4"
-            memory: "4Gi"
+            cpu: "3"
+            memory: "3Gi"
           requests:
             cpu: "1"
             memory: "2Gi"
@@ -39,3 +39,4 @@ spec:
         - secretRef:
             name: smtp-creds
             
+
