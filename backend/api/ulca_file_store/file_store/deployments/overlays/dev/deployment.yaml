@@ -5,7 +5,7 @@ metadata:
   namespace: file-store
   labels:
     app: file-store
-    env: prod
+    env: dev
 spec:
   replicas: 2
   strategy:
@@ -23,14 +23,14 @@ spec:
     spec:
       containers:
       - name: file-store
-        image: registryharbor.bhashini.co.in/bhashini/udyat-prod/file-store:3
+        image: registryharbor.bhashini.co.in/bhashini/udyat-dev/file-store:3
         imagePullPolicy: Always
         ports:
         - containerPort: 5001
         resources:
           limits:
-            cpu: "4"
-            memory: "4Gi"
+            cpu: "3"
+            memory: "3Gi"
           requests:
             cpu: "1"
             memory: "2Gi"
@@ -82,3 +82,4 @@ spec:
         nfs:
           server: 172.29.128.226
           path: /u01/nfs
+
