@@ -5,7 +5,7 @@ metadata:
   namespace: zuul-gw
   labels:
     app: zuul-gw
-    env: prod
+    env: dev
 spec:
   replicas: 2
   selector:
@@ -20,12 +20,12 @@ spec:
     metadata:
       labels:
         app: zuul-gw
-        env: prod
+        env: dev
     spec:
       terminationGracePeriodSeconds: 30
       containers:
         - name: zuul-gw
-          image: registryharbor.bhashini.co.in/bhashini/udyat-prod/zuul-gw:21
+          image: registryharbor.bhashini.co.in/bhashini/udyat-dev/zuul-gw:21
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8080
@@ -37,5 +37,6 @@ spec:
               cpu: "1"
               memory: "2Gi"
             limits:
-              cpu: "8"
-              memory: "8Gi"
+              cpu: "3"
+              memory: "3Gi"
+
