@@ -5,7 +5,7 @@ metadata:
   namespace: error-consumer
   labels:
     app: error-consumer
-    env: dev
+    env: prod
 spec:
   replicas: 1
   strategy:
@@ -23,7 +23,7 @@ spec:
     spec:
       containers:
       - name: error-consumer
-        image: registryharbor.bhashini.co.in/bhashini/udyat-dev/error-consumer:3
+        image: registryharbor.bhashini.co.in/bhashini/udyat-prod/error-consumer:3
         ports:
         - containerPort: 5001
         resources:
@@ -93,4 +93,5 @@ spec:
         nfs:
           server: 172.29.128.226
           path: /u01/nfs
+
 
