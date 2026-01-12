@@ -7,7 +7,7 @@ metadata:
     app: notifier-service
     env: prod
 spec:
-  replicas: 2
+  replicas: 1
   strategy:
     type: RollingUpdate
     rollingUpdate:
@@ -28,8 +28,8 @@ spec:
         - containerPort: 5001
         resources:
           limits:
-            cpu: "4"
-            memory: "4Gi"
+            cpu: "3"
+            memory: "3Gi"
           requests:
             cpu: "1"
             memory: "2Gi"
@@ -38,3 +38,4 @@ spec:
             name: common-secret
         - secretRef:
             name: smtp-creds
+
