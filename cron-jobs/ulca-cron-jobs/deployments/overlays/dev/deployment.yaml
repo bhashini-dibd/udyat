@@ -5,9 +5,9 @@ metadata:
   namespace: cron-jobs
   labels:
     app: cron-jobs
-    env: prod
+    env: dev
 spec:
-  replicas: 2
+  replicas: 1
   strategy:
     type: RollingUpdate
     rollingUpdate:
@@ -68,7 +68,7 @@ spec:
             memory: "2Gi"
           limits:
             cpu: "2"
-            memory: "4Gi"
+            memory: "3Gi"
         envFrom:
         - secretRef:
             name: common-secret
@@ -96,3 +96,4 @@ spec:
           readOnly: false
       - name: jre-overlay
         emptyDir: {}
+
