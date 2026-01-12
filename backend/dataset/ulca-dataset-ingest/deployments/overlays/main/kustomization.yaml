@@ -5,7 +5,3 @@ namespace: dataset-ingest
 
 resources:
   - ../../base
-  - service.yaml        
-
-patchesStrategicMerge:
-  - deployment.yaml     
