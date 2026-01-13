@@ -1,0 +1,310 @@
+pipeline {
+    agent any
+
+    parameters {
+
+        string(
+            name: 'BRANCH_NAME',
+            defaultValue: 'develop',
+            description: 'Git branch to build'
+        )
+
+        choice(
+            name: 'SERVICE_NAME',
+            choices: [
+                'asr-model-compute-api',
+                'master-data-management-service',
+                'ulca-dataset-api',
+                'ulca-error-consumer',
+                'ulca-notifier',
+                'ulca-ums-service',
+                'ulca-dataset-ingest',
+                'ulca-dataset-download',
+                'publish',
+                'validate',
+                'ulca-zuul-api-gw',
+                'ulca_file_store',
+                'ulca-metric-api',
+                'ulca-utility-service',
+                'ulca-model-api',
+                'benchmark-metrics',
+                'ulca-benchmark-download',
+                'ulca-cron-jobs'
+                
+            ],
+            description: 'Select ULCA microservice'
+        )
+
+        choice(
+            name: 'dev',
+            choices: ['dev', 'prod'],
+            description: 'Deployment environment'
+        )
+    }
+
+    environment {
+        HARBOR_REGISTRY = "registryharbor.bhashini.co.in"
+        DEV_REPO        = "bhashini/udyat-dev"
+        PROD_REPO       = "bhashini/udyat-prod"
+    }
+
+    stages {
+
+        /* =========================
+           Checkout
+        ==========================*/
+        stage('Checkout') {
+            steps {
+                withCredentials([usernamePassword(
+                    credentialsId: 'github-creds',
+                    usernameVariable: 'GIT_USERNAME',
+                    passwordVariable: 'GIT_PASSWORD'
+                )]) {
+                    checkout([
+                        $class: 'GitSCM',
+                        branches: [[name: "*/${params.BRANCH_NAME}"]],
+                        userRemoteConfigs: [[
+                            url: 'https://github.com/bhashini-dibd/udyat.git',
+                            credentialsId: 'github-creds'
+                        ]]
+                    ])
+                }
+                echo "Checked out ${params.BRANCH_NAME}"
+            }
+        }
+
+        /* =========================
+           Resolve Service Paths
+        ==========================*/
+        stage('Resolve Service Config') {
+            steps {
+                script {
+
+                    def SERVICES = [
+
+                        "asr-model-compute-api": [
+                            code: "backend/api/asr-model-compute-api/src",
+                            k8s : "backend/api/asr-model-compute-api/src/deployments",
+                            deploy: "asr-model-compute-deployment",
+                            ns: "asr-model-compute"
+                        ],
+
+                        "master-data-management-service": [
+                            code: "backend/api/master-data-management-service/mdms",
+                            k8s : "backend/api/master-data-management-service/mdms/deployments",
+                            deploy: "master-data-management-deployment",
+                            ns: "master-data-management"
+                        ],
+
+                        "ulca-dataset-api": [
+                            code: "backend/api/ulca-dataset-api",
+                            k8s : "backend/api/ulca-dataset-api/deployments",
+                            deploy: "dataset-api-deployment",
+                            ns: "dataset-api"
+                        ],
+ 
+                        "ulca-error-consumer": [
+                            code: "backend/api/ulca-error-consumer",
+                            k8s : "backend/api/ulca-error-consumer/deployments",
+                            deploy: "error-consumer-deployment",
+                            ns: "error-consumer"
+                        ],
+
+                        "ulca-notifier": [
+                            code: "backend/api/ulca-notifier/notifier",
+                            k8s : "backend/api/ulca-notifier/notifier/deployments",
+                            deploy: "notifier-service-deployment",
+                            ns: "notifier-service"
+                        ],
+
+                        "ulca-ums-service": [
+                            code: "backend/api/ulca-ums-service/user-management",
+                            k8s : "backend/api/ulca-ums-service/user-management/deployments",
+                            deploy: "ums-deployment",
+                            ns: "ums"
+                        ],                        
+   
+                      
+                        "ulca-dataset-ingest": [
+                            code: "backend/dataset/ulca-dataset-ingest",
+                            k8s : "backend/dataset/ulca-dataset-ingest/deployments",
+                            deploy: "dataset-ingest-deployment",
+                            ns: "dataset-ingest"
+                        ],
+
+                        "ulca-dataset-download": [
+                            code: "backend/dataset/ulca-dataset-download",
+                            k8s : "backend/dataset/ulca-dataset-download/deployments",
+                            deploy: "dataset-download-deployment",
+                            ns: "dataset-download"
+                        ],
+
+                        "publish": [
+                            code: "backend/dataset/publish",
+                            k8s : "backend/dataset/publish/deployments",
+                            deploy: "publish-deployment",
+                            ns: "publish"
+                        ],
+
+                        "validate": [
+                            code: "backend/dataset/validate",
+                            k8s : "backend/dataset/validate/deployments",
+                            deploy: "validate-deployment",
+                            ns: "validate"
+                        ],
+
+                        "ulca-zuul-api-gw": [
+                            code: "backend/api/ulca-zuul-api-gw/ulca-zuul",
+                            k8s : "backend/api/ulca-zuul-api-gw/ulca-zuul/deployments",
+                            deploy: "zuul-gw-deployment",
+                            ns: "zuul-gw"
+                        ],
+
+                        "ulca_file_store": [
+                            code: "backend/api/ulca_file_store/file_store",
+                            k8s : "backend/api/ulca_file_store/file_store/deployments",
+                            deploy: "file-store-deployment",
+                            ns: "file-store"
+                        ],
+
+                        "ulca-metric-api": [
+                            code: "backend/metric/ulca-metric-api",
+                            k8s : "backend/metric/ulca-metric-api/deployments",
+                            deploy: "data-metric-deployment",
+                            ns: "data-metric"
+                        ],
+
+                        "ulca-utility-service": [
+                            code: "backend/metric/ulca-utility-service/src",
+                            k8s : "backend/metric/ulca-utility-service/src/deployments",
+                            deploy: "utility-service-deployment",
+                            ns: "utility-service"
+                        ],
+
+
+                        "ulca-model-api": [
+                            code: "backend/model/api/ulca-model-api",
+                            k8s : "backend/model/api/ulca-model-api/deployments",
+                            deploy: "model-api-deployment",
+                            ns: "model-api"
+                        ],
+
+                        "benchmark-metrics": [
+                            code: "backend/model/benchmark-metrics",
+                            k8s : "backend/model/benchmark-metrics/deployments",
+                            deploy: "benchmark-metrics-deployment",
+                            ns: "benchmark-metrics"
+                        ],
+
+                        "ulca-benchmark-download": [
+                            code: "backend/model/ulca-benchmark-download",
+                            k8s : "backend/model/ulca-benchmark-download/deployments",
+                            deploy: "benchmark-download-deployment",
+                            ns: "benchmark-download"
+                        ],
+
+                        "ulca-cron-jobs": [
+                            code: "cron-jobs/ulca-cron-jobs",
+                            k8s : "cron-jobs/ulca-cron-jobs/deployments",
+                            deploy: "cron-jobs-deployment",
+                            ns: "cron-jobs"
+                        ]
+                    ]
+
+                    def cfg = SERVICES[params.SERVICE_NAME]
+                    if (!cfg) {
+                        error "Service not configured in pipeline"
+                    }
+
+                    env.CODE_PATH  = cfg.code
+                    env.K8S_PATH   = cfg.k8s
+                    env.DEPLOYMENT = cfg.deploy
+                    env.NAMESPACE  = cfg.ns
+                    env.IMAGE_TAG  = "1.0.${BUILD_ID}"
+                    env.REPO       = (params.ENV == 'dev') ? env.DEV_REPO : env.PROD_REPO
+                }
+            }
+        }
+
+        /* =========================
+           Build Image
+        ==========================*/
+        stage('Build Docker Image') {
+            steps {
+                sh """
+                  podman build \
+                    -t ${params.SERVICE_NAME}:${IMAGE_TAG} \
+                    ${CODE_PATH}
+
+                  podman tag ${params.SERVICE_NAME}:${IMAGE_TAG} \
+                    ${HARBOR_REGISTRY}/${REPO}/${params.SERVICE_NAME}:${IMAGE_TAG}
+                """
+            }
+        }
+
+        /* =========================
+           Push Image
+        ==========================*/
+        stage('Push Image to Harbor') {
+            steps {
+                withCredentials([usernamePassword(
+                    credentialsId: 'docker-cred',
+                    usernameVariable: 'Username',
+                    passwordVariable: 'Password'
+                )]) {
+                    sh """
+                      podman login ${HARBOR_REGISTRY} -u "$Username" -p "$Password"
+                      podman push ${HARBOR_REGISTRY}/${REPO}/${params.SERVICE_NAME}:${IMAGE_TAG}
+                    """
+                }
+            }
+        }
+
+        /* =========================
+           Update Kustomize Image
+        ==========================*/
+        stage('Update Kustomize Image') {
+            steps {
+                dir("${K8S_PATH}/overlays/${ENV}") {
+                    sh """
+                      kustomize edit set image \
+                        ${params.SERVICE_NAME}=${HARBOR_REGISTRY}/${REPO}/${params.SERVICE_NAME}:${IMAGE_TAG}
+                      
+                    """
+                }
+            }
+        }
+
+        /* =========================
+           Deploy to Kubernetes
+        ==========================*/
+        stage('Deploy to Kubernetes') {
+            steps {
+                withKubeConfig([
+                    credentialsId: params.ENV == 'dev'
+                        ? 'udyat-dev-cluster'
+                        : 'udyat-prod-cluster'
+                ]) {
+                    dir("${K8S_PATH}/overlays/${ENV}") {
+                        sh """
+                          kubectl apply -k .
+                          kubectl rollout status deployment/${DEPLOYMENT} -n ${NAMESPACE}
+                        """
+                    }
+                }
+            }
+        }
+    }
+
+    post {
+        always {
+            cleanWs()
+        }
+        success {
+            echo "ULCA ${params.ENV} deployment SUCCESS for ${params.SERVICE_NAME}"
+        }
+        failure {
+            echo "ULCA ${params.ENV} deployment FAILED for ${params.SERVICE_NAME}"
+        }
+    }
+}
