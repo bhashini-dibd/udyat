@@ -1,0 +1,104 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: publish-deployment
+  namespace: publish
+  labels:
+    app: publish
+    env: prod
+spec:
+  replicas: 2
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+  selector:
+    matchLabels:
+      app: publish
+  template:
+    metadata:
+      labels:
+        app: publish
+    spec:
+      containers:
+      - name: publish
+        image: registryharbor.bhashini.co.in/bhashini/udyat-prod/publish:11
+        ports:
+        - containerPort: 5001
+        resources:
+          limits:
+            cpu: "2"
+            memory: "3Gi"
+          requests:
+            cpu: "1"
+            memory: "2Gi"
+        env:
+        - name: ULCA_AZURE_CONNECTION_STRING
+          valueFrom:
+            secretKeyRef:
+              name: blob-storage-creds
+              key: ULCA_AZURE_CONNECTION_STRING
+
+        - name: ULCA_AWS_S3_ACCESS_KEY
+          valueFrom:
+            secretKeyRef:
+              name: ulca-bucket-iam-creds
+              key: ULCA_AWS_S3_ACCESS_KEY
+        - name: ULCA_AWS_S3_SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: ulca-bucket-iam-creds
+              key: ULCA_AWS_S3_SECRET_KEY
+        - name: ULCA_DS_PUBLISH_DB
+          value: "ulca"
+        - name: ULCA_DS_PUBLISH_ASR_COL
+          value: "asr-dataset"
+        - name: ULCA_DS_PUBLISH_OCR_COL
+          value: "ocr-dataset"
+        - name: ULCA_DS_PUBLISH_PARALLEL_COL
+          value: "parallel-dataset"
+        - name: ULCA_DS_PUBLISH_MONOLINGUAL_COL
+          value: "monolingual-dataset"
+        - name: ULCA_SEARCH_SHARED_STORAGE_PATH
+          value: "/opt/"
+        - name: KAFKA_ULCA_DS_PUBLISH_IP_TOPIC
+          value: "ulca-ds-publish-ip-v0"
+        - name: KAFKA_ULCA_DS_SEARCH_IP_TOPIC
+          value: "ulca-ds-search-ip-v0"
+        - name: KAFKA_ULCA_DS_DELETE_IP_TOPIC
+          value: "ulca-ds-delete-ip-v0"
+        - name: KAFKA_ULCA_DS_PUBLISH_CONSUMER_GRP
+          value: "ulca-ds-publish-consumer-group-v0"
+        - name: PT_TOOL_PUBLISH
+          value: "publish"
+        - name: PT_TOOL_SEARCH
+          value: "search"
+        - name: KAFKA_ULCA_DS_METRIC_IP_TOPIC
+          value: "org-ulca-bievent-dataset-v3"
+        - name: ULCA_DS_PUBLISH_DB
+          value: "ulca"
+        - name: ULCA_ERROR_COL
+          value: "errors"
+        - name: STATUS_INPROGRESS
+          value: "In-Progress"
+        - name: STATUS_COMPLETED
+          value: "Completed"
+        - name: STATUS_FAILED
+          value: "Failed"
+        - name: STATUS_PENDING
+          value: "Pending"
+        - name: ULCA_PUBLISH_RECORD_EXPIRY_IN_SEC
+          value: "172800"
+        envFrom:
+        - secretRef:
+            name: common-secret
+        volumeMounts:
+        - name: model-dir
+          mountPath: /opt
+
+      volumes:
+      - name: model-dir
+        nfs:
+          server: 172.29.128.226
+          path: /u01/nfs
