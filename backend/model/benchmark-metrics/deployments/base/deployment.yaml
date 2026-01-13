@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: benchmark-metrics-deployment
+  namespace: benchmark-metrics
+  labels:
+    app: benchmark-metrics
+    env: prod
+spec:
+  replicas: 4
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+  selector:
+    matchLabels:
+      app: benchmark-metrics
+  template:
+    metadata:
+      labels:
+        app: benchmark-metrics
+    spec:
+      containers:
+      - name: benchmark-metrics
+        image: registryharbor.bhashini.co.in/bhashini/udyat-prod/benchmark-metrics:2
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 5001
+        resources:
+          limits:
+            cpu: "4"
+            memory: "4Gi"
+          requests:
+            cpu: "2"
+            memory: "2Gi"
+        envFrom:
+        - secretRef:
+            name: common-secret
