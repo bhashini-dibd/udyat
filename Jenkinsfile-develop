@@ -232,11 +232,11 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 sh """
-                  podman build \
+                 sudo podman build \
                     -t ${params.SERVICE_NAME}:${IMAGE_TAG} \
                     ${CODE_PATH}
 
-                  podman tag ${params.SERVICE_NAME}:${IMAGE_TAG} \
+                 sudo podman tag ${params.SERVICE_NAME}:${IMAGE_TAG} \
                     ${HARBOR_REGISTRY}/${REPO}/${params.SERVICE_NAME}:${IMAGE_TAG}
                 """
             }
@@ -253,8 +253,8 @@ pipeline {
                     passwordVariable: 'Password'
                 )]) {
                     sh """
-                      podman login ${HARBOR_REGISTRY} -u "$Username" -p "$Password"
-                      podman push ${HARBOR_REGISTRY}/${REPO}/${params.SERVICE_NAME}:${IMAGE_TAG}
+                     sudo podman login ${HARBOR_REGISTRY} -u "$Username" -p "$Password"
+                     sudo podman push ${HARBOR_REGISTRY}/${REPO}/${params.SERVICE_NAME}:${IMAGE_TAG}
                     """
                 }
             }
