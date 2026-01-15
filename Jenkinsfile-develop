@@ -36,8 +36,8 @@ pipeline {
         )
 
         choice(
-            name: 'dev',
-            choices: ['dev', 'prod'],
+            name: 'ENV',
+            choices: ['dev', 'main'],
             description: 'Deployment environment'
         )
     }
@@ -283,7 +283,7 @@ pipeline {
                 withKubeConfig([
                     credentialsId: params.ENV == 'dev'
                         ? 'udyat-dev-cluster'
-                        : 'udyat-prod-cluster'
+                        : 'udyat-cluster-prod'
                 ]) {
                     dir("${K8S_PATH}/overlays/${ENV}") {
                         sh """
