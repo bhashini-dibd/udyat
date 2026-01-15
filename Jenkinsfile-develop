@@ -267,9 +267,11 @@ pipeline {
             steps {
                 dir("${K8S_PATH}/overlays/${ENV}") {
                     sh """
-                      kustomize edit set image \
-                        ${params.SERVICE_NAME}=${HARBOR_REGISTRY}/${REPO}/${params.SERVICE_NAME}:${IMAGE_TAG}
-                      
+                      kustomize build . | \
+                      sed 's|image:.*${params.SERVICE_NAME}.*|image: ${HARBOR_REGISTRY}/${REPO}/${params.SERVICE_NAME}:${IMAGE_TAG}|' | \
+                      kubectl apply -f -
+                  
+                      kubectl rollout status deployment/${DEPLOYMENT} -n ${NAMESPACE}
                     """
                 }
             }
