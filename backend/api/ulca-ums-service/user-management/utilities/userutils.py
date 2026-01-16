@@ -635,7 +635,7 @@ class UserUtils:
                 # msg.attach(part)
 
                 # Connect to the SMTP server
-                with smtplib.SMTP('smtp.azurecomm.net', 587) as server:
+                with smtplib.SMTP('smtp.zeptomail.in', 587) as server:
                     server.starttls()
                     print(f"SENDER USERNAME :: {SENDER_USERNAME}")
                     print(f"SENDER PASSWORD :: {SENDER_PASSWORD}")
