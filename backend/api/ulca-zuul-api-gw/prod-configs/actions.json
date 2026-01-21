@@ -487,6 +487,71 @@
       "active": true,
       "whiteList": true,
       "description": "API to generate service provider api keys"
+    },
+    {
+      "id": "d9df89a0-2fc5-44a9-88a7-bc2b48f009fc", 
+      "uri": "/ulca/user-mgmt/v1/users/speakers/enroll", 
+      "module": "ULCA-UMS", 
+      "active": true, 
+      "whiteList": false, 
+      "description": "API to enroll new speaker."
+    }, 
+    {
+      "id": "0768919c-cc93-4790-88d6-eabeb77917f8", 
+      "uri": "/ulca/user-mgmt/v1/users/speakers/verify", 
+      "module": "ULCA-UMS", 
+      "active": true, 
+      "whiteList": false, 
+      "description": "API to verify any speaker by passing Audio input."
+    }, 
+    {
+      "id": "1c6533c2-814a-4fb1-88e6-f91c74e7496a", 
+      "uri": "/ulca/user-mgmt/v1/users/speakers/list", 
+      "module": "ULCA-UMS", 
+      "active": true, 
+      "whiteList": false, 
+      "description": "API to fetch all enrolled speakers for api key."
+    }, 
+    {
+      "id": "ff8bee14-698c-4508-896a-c02333ba154a", 
+      "uri": "/ulca/user-mgmt/v1/users/speakers/delete", 
+      "module": "ULCA-UMS", 
+      "active": true, 
+      "whiteList": false, 
+      "description": "API to delete speaker based on speaker ID value."
+    }, 
+    {
+      "id": "36a4ee3d-133a-445e-9eec-9bb4bdf78216",
+      "uri": "/ulca/user-mgmt/v1/users/onboardingApp/userDetails",
+      "module": "ULCA-UMS",
+      "active": true,
+      "whiteList": true,
+      "description": "API to fetch user details"
+    },
+    {
+      "id": "2ca7dbbb-cbd7-4dc3-83ae-f2490153ae09",
+      "uri": "/ulca/user-mgmt/v1/users/onboardingApp/userKeyDetails",
+      "module": "ULCA-UMS",
+      "active": true,
+      "whiteList": true,
+      "description": "API to fetch user key details"
+    },
+    {
+      "id": "ef82ada1-efee-472f-bba2-051fc728fad9",
+      "uri": "/ulca/user-mgmt/v1/users/onboardingApp/userLists",
+      "module": "ULCA-UMS",
+      "active": true,
+      "whiteList": true,
+      "description": "API to fetch list of users available"
+    },
+   {
+      "id": "ec3132a7-7432-4be8-91fa-9968e813cc6b",
+      "uri": "/ulca/apis/v0/model/getModelsAllPipelineWithScript",
+      "module": "ULCA-API-MODEL",
+      "active": true,
+      "whiteList": true,
+      "description": "API to fetch all tasks pipeline with script"
     }
+   
   ]
 }
