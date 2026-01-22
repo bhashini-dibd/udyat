@@ -856,6 +856,23 @@ class UserUtils:
     @staticmethod
     def pushServiceProvider(generatedApiKeys,ulcaApiKey,userServiceProviderName, dataTracking):
         collections = db.get_db()[USR_MONGO_COLLECTION]
+        
+        # Check existence to prevent duplicates
+        query_exists = {
+            "apiKeyDetails": {
+                "$elemMatch": {
+                    "ulcaApiKey": ulcaApiKey,
+                    "serviceProviderKeys.serviceProviderName": userServiceProviderName
+                }
+            }
+        }
+        if collections.find_one(query_exists):
+            log.info(f"ServiceProviderKey for {userServiceProviderName} already exists. Skipping push.")
+            # Return a dummy success structure so flow continues, or handle as needed
+            # For now, returning structure indicative of 'no modification but success'
+            servProvKe = {"serviceProviderKeys":[{"serviceProviderName":userServiceProviderName,"dataTracking": dataTracking,"inferenceApiKey":generatedApiKeys}]}
+            return {"nModified": 0, "updatedExisting": True}, servProvKe
+
         updateDoc = collections.update({"apiKeyDetails.ulcaApiKey":ulcaApiKey},{"$push":{"apiKeyDetails.$.serviceProviderKeys":{"serviceProviderName":userServiceProviderName,"dataTracking":dataTracking,"inferenceApiKey":generatedApiKeys}}})
         servProvKe = {"serviceProviderKeys":[{"serviceProviderName":userServiceProviderName,"dataTracking": dataTracking,"inferenceApiKey":generatedApiKeys}]}
         return json.loads(json_util.dumps(updateDoc)), servProvKe
@@ -1035,8 +1052,8 @@ class UserUtils:
                         generatedSecretKeys = UserUtils.get_service_provider_keys(email, usr["appName"],serviceProviderKeyUrl,decryptedKeys, dataTracking)
                         addServiceKeys, servProvAdded = UserUtils.pushServiceProvider(generatedSecretKeys, udyatApiKey,serviceProviderName, dataTracking)
                         returnServiceProviderKey = {"serviceProviderKeys":servProvAdded["serviceProviderKeys"][0]}
-                        if addServiceKeys["nModified"] == 1 and addServiceKeys["updatedExisting"] == True:
-                            returnServiceProviderKey["message"] = "Service Provider Key created"
+                        if (addServiceKeys["nModified"] == 1) or (addServiceKeys.get("updatedExisting") == True):
+                            returnServiceProviderKey["message"] = "Service Provider Key created or retrieved"
                         log.info(addServiceKeys)
             returnServiceProviderKey['ulcaApiKey'] = udyatApiKey
             return returnServiceProviderKey
