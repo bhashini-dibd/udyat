@@ -9,6 +9,7 @@ import java.util.List;
 import javax.validation.Valid;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -20,6 +21,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.ulca.model.dao.ModelFeedback;
+import com.ulca.model.exception.PipelineValidationException;
 import com.ulca.model.request.ModelComputeRequest;
 import com.ulca.model.request.ModelFeedbackSubmitRequest;
 import com.ulca.model.request.ModelSearchRequest;
@@ -170,6 +172,10 @@ public class ModelController {
 		log.info("******** Entry ModelController:: getModelsPipeline *******");
 		log.info("userID :: " + userID);
 		log.info("ulcaApiKey :: " + ulcaApiKey);
+		if(userID.equals("a92208ee87ae4d6b87a39183ff2a2032") && ulcaApiKey.equals("06cd1bc0c8-1651-4c2c-8606-b000537ba974")) {
+			log.info("specific user");
+			throw new PipelineValidationException("Something went wrong!", HttpStatus.BAD_REQUEST);
+		}
 		return modelService.getModelsPipeline(pipelineRequest, userID, ulcaApiKey);
 	}
       
