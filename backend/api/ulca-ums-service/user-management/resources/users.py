@@ -362,9 +362,9 @@ class GenerateServiceProviderKey(Resource):
                         generatedSecretKeys = UserUtils.get_service_provider_keys(email, usr["appName"],serviceProviderKeyUrl,decryptedKeys, dataTracking)
                         addServiceKeys, servProvAdded = UserUtils.pushServiceProvider(generatedSecretKeys, body["ulcaApiKey"],serviceProviderName, dataTracking)
                         returnServiceProviderKey = {"serviceProviderKeys":servProvAdded["serviceProviderKeys"][0]}
-                        if addServiceKeys["nModified"] == 1 and addServiceKeys["updatedExisting"] == True:
-                            returnServiceProviderKey["message"] = "Service Provider Key created"
-                        elif not addServiceKeys["nModified"] == 1 :
+                        if (addServiceKeys["nModified"] == 1) or (addServiceKeys.get("updatedExisting") == True):
+                            returnServiceProviderKey["message"] = "Service Provider Key created or retrieved"
+                        else:
                             return post_error("400", "Service Provider Key not created", None), 400
                         log.info(addServiceKeys)
             if "ulcaApiKey" in body.keys():
