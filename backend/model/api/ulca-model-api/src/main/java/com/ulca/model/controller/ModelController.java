@@ -172,10 +172,6 @@ public class ModelController {
 		log.info("******** Entry ModelController:: getModelsPipeline *******");
 		log.info("userID :: " + userID);
 		log.info("ulcaApiKey :: " + ulcaApiKey);
-		if(userID.equals("a92208ee87ae4d6b87a39183ff2a2032") && ulcaApiKey.equals("06cd1bc0c8-1651-4c2c-8606-b000537ba974")) {
-			log.info("specific user");
-			throw new PipelineValidationException("Something went wrong!", HttpStatus.BAD_REQUEST);
-		}
 		return modelService.getModelsPipeline(pipelineRequest, userID, ulcaApiKey);
 	}
       
