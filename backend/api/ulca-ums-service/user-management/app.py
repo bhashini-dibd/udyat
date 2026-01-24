@@ -48,7 +48,7 @@ class StandaloneApplication(BaseApplication):
 # 3. Run inside __main__
 if __name__ == '__main__':
     options = {
-        'bind': '0.0.0.0:8000',
+        'bind': f'{config.HOST}:{config.PORT}',
         'workers': 4,  # Number of worker processes
         'threads': 2,  # Threads per worker (gthreads mode)
         'timeout': 120,
