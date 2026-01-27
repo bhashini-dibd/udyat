@@ -265,6 +265,8 @@ class GenerateApiKey(Resource):
 class GenerateServiceProviderKeyWithoutLogin(Resource):
     def post(self):
         body = request.get_json()
+        log.info("[Generate-v2] GenerateServiceProviderKeyWithoutLogin API called")
+        log.info(f"[Generate-v2] GenerateServiceProviderKeyWithoutLogin email/userID: {body.get('userID', 'N/A')}")
         if "userID" not in body.keys():
             return post_error("400", "Please provide userID", None), 400
         if "udyatApiKey" not in body.keys():
@@ -280,6 +282,8 @@ class GenerateServiceProviderKeyWithoutLogin(Resource):
 class GenerateServiceProviderKey(Resource):
     def post(self):
         body = request.get_json()
+        log.info("[Generate-v1] GenerateServiceProviderKey API called")
+        log.info(f"[Generate-v1] GenerateServiceProviderKey email/userID: {body.get('userID', 'N/A')}")
         
         # Below 2 lines are for key generation within Authenticator Application
         if "udyatApiKey" in body.keys() and "userID" in body.keys() and "appName" in body.keys():
@@ -334,6 +338,7 @@ class GenerateServiceProviderKey(Resource):
             masterList.append(masterkeyname)
             masterList.append(masterkeyvalue)
         user_document,email  = UserUtils.get_userDoc(body["userID"]) #UMS
+        log.info(f"[Generate-v1] email :: {email}")
         if not user_document and not email:
             return post_error("400", "Error in fetching ulcaApiKey. Please check if it exists.", None), 400
         if isinstance(user_document, list) and user_document:
@@ -377,6 +382,8 @@ class GenerateServiceProviderKey(Resource):
 class RemoveServiceProviderKeyWithoutLogin(Resource):
     def post(self):
         body = request.get_json()
+        log.info("[Remove-v2] RemoveServiceProviderKeyWithoutLogin API called")
+        log.info(f"[Remove-v2] RemoveServiceProviderKeyWithoutLogin email/userID: {body.get('userID', 'N/A')}")
         if "userID" not in body.keys():
             return post_error("400", "Please provide userID", None), 400
         if "udyatApiKey" not in body.keys():
@@ -393,7 +400,9 @@ class RemoveServiceProviderKeyWithoutLogin(Resource):
 class RemoveServiceProviderKey(Resource):
     def post(self):
         body = request.get_json()
-        
+        log.info("[Remove-v1] RemoveServiceProviderKey API called")
+        log.info(f"[Remove-v1] RemoveServiceProviderKey email/userID: {body.get('userID', 'N/A')}")
+
         # Below 2 lines are for key generation within Authenticator Application
         if "udyatApiKey" in body.keys() and "userID" in body.keys() and "appName" in body.keys():
             return UserUtils.removeServiceProviderKey(body["userID"],body["appName"],body["udyatApiKey"])
@@ -423,6 +432,7 @@ class RemoveServiceProviderKey(Resource):
 
         # Retrieve user details 
         user_document,email  = UserUtils.get_userDoc(body["userID"]) #UMS
+        log.info(f"[Remove-v1] email :: {email}")
         if not user_document and not email:
             return post_error("400", "userID does not exists.   Please provide a valid userID", None), 400
         if isinstance(user_document, list) and user_document:
