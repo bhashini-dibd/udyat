@@ -1028,7 +1028,7 @@ class UserUtils:
         elif pipelineID == None:
             return post_error("400", "pipelineID does not exists.   Please provide a valid pipelineId", None), 400
         user_document,email  = UserUtils.get_userDoc(userID) #UMS
-        log.info(f"[Generate-v2] email_id :: {email}")
+        print(f"[Generate-v2] email_id :: {email}")
         if isinstance(user_document, list) and user_document:
             #log.info("DETAILS:",user_document,body)
             if not any(usr['ulcaApiKey'] == udyatApiKey for usr in user_document):
@@ -1081,7 +1081,7 @@ class UserUtils:
 
         # Retrieve user details 
         user_document,email  = UserUtils.get_userDoc(userID) #UMS
-        log.info(f"[Remove-v2] email_id :: {email}")
+        print(f"[Remove-v2] email_id :: {email}")
         if not user_document and not email:
             return post_error("400", "userID does not exists.   Please provide a valid userID", None), 400
         if isinstance(user_document, list) and user_document:
