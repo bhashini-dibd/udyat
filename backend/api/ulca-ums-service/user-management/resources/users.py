@@ -267,6 +267,7 @@ class GenerateServiceProviderKeyWithoutLogin(Resource):
         body = request.get_json()
         print("[Generate-v2] GenerateServiceProviderKeyWithoutLogin API called")
         print(f"[Generate-v2] GenerateServiceProviderKeyWithoutLogin email/userID: {body.get('userID', 'N/A')}")
+        print(f"[Generate-v2] appName: {body.get('appName', 'N/A')}, udyatApiKey: {body.get('udyatApiKey', 'N/A')}")
         if "userID" not in body.keys():
             return post_error("400", "Please provide userID", None), 400
         if "udyatApiKey" not in body.keys():
@@ -284,7 +285,8 @@ class GenerateServiceProviderKey(Resource):
         body = request.get_json()
         print("[Generate-v1] GenerateServiceProviderKey API called")
         print(f"[Generate-v1] GenerateServiceProviderKey email/userID: {body.get('userID', 'N/A')}")
-        
+        print(f"[Generate-v1] appName: {body.get('appName', 'N/A')}, ulcaApiKey: {body.get('ulcaApiKey', 'N/A')}, udyatApiKey: {body.get('udyatApiKey', 'N/A')}")
+
         # Below 2 lines are for key generation within Authenticator Application
         if "udyatApiKey" in body.keys() and "userID" in body.keys() and "appName" in body.keys():
             return UserUtils.generateServiceProviderKey(body["userID"],body["appName"],body["udyatApiKey"])
@@ -384,6 +386,7 @@ class RemoveServiceProviderKeyWithoutLogin(Resource):
         body = request.get_json()
         print("[Remove-v2] RemoveServiceProviderKeyWithoutLogin API called")
         print(f"[Remove-v2] RemoveServiceProviderKeyWithoutLogin email/userID: {body.get('userID', 'N/A')}")
+        print(f"[Remove-v2] appName: {body.get('appName', 'N/A')}, udyatApiKey: {body.get('udyatApiKey', 'N/A')}")
         if "userID" not in body.keys():
             return post_error("400", "Please provide userID", None), 400
         if "udyatApiKey" not in body.keys():
@@ -402,6 +405,7 @@ class RemoveServiceProviderKey(Resource):
         body = request.get_json()
         print("[Remove-v1] RemoveServiceProviderKey API called")
         print(f"[Remove-v1] RemoveServiceProviderKey email/userID: {body.get('userID', 'N/A')}")
+        print(f"[Remove-v1] appName: {body.get('appName', 'N/A')}, ulcaApiKey: {body.get('ulcaApiKey', 'N/A')}, udyatApiKey: {body.get('udyatApiKey', 'N/A')}")
 
         # Below 2 lines are for key generation within Authenticator Application
         if "udyatApiKey" in body.keys() and "userID" in body.keys() and "appName" in body.keys():
