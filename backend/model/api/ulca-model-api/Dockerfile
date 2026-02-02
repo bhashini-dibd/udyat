@@ -1,15 +1,16 @@
-FROM docker.io/openjdk:11.0.4-jre-slim
+# ---------- Build stage ----------
+FROM maven:3.9.6-eclipse-temurin-11 AS builder
+WORKDIR /build
+COPY pom.xml .
+COPY src ./src
+RUN mvn clean package -DskipTests
 
-# create user/group
+# ---------- Runtime stage ----------
+FROM eclipse-temurin:11-jre-jammy
 RUN groupadd -r appgroup && useradd -r -g appgroup appuser
-
 WORKDIR /app
-
-# copy as root, then drop privileges
-COPY target/ulca-model-api.jar /app/ulca-model-api.jar
-
+COPY --from=builder /build/target/*jar app.jar
 USER appuser
-
 EXPOSE 8080
-ENTRYPOINT ["java","-jar","/app/ulca-model-api.jar"]
+ENTRYPOINT ["java","-jar","/app/app.jar"]
 
