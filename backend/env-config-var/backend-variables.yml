@@ -19,10 +19,36 @@ REDIS_PASS='redis pwd'
 ULCA_AWS_S3_ACCESS_KEY='access-key'
 ULCA_AWS_S3_SECRET_KEY='secret-key'
 ULCA_AWS_BUCKET_NAME='ulca-datasets'
-ULCA_AZURE_CONNECTION_STRING='azure_conn_string'
-ULCA_AZURE_FILE_CONTAINER='azure_container'
-ULCA_AZURE_ACCOUNT_NAME='azure_account'
-ULCA_OBJECT_STORE='AWS'
+
+# Yotta S3-Compatible Storage Configuration
+ULCA_YOTTA_UPLOAD_ENDPOINT_URL='https://sosnm1.shakticloud.ai:9024'
+ULCA_YOTTA_DOWNLOAD_ENDPOINT_URL='https://bhashinimigrationns.sosnm1.shakticloud.ai:9024/'
+ULCA_YOTTA_ACCESS_KEY='access-key'
+ULCA_YOTTA_SECRET_KEY='secret-key'
+ULCA_YOTTA_BUCKET_NAME='ulcauatdsamba'
+ULCA_YOTTA_FILE_PREFIX='samba-share'
+ULCA_YOTTA_REGION_NAME='us-east-1'
+
+# Keep ULCA_OBJECT_STORE as 'AZURE' for backward compatibility with routing logic
+ULCA_OBJECT_STORE='AZURE'
+
+# Yotta Bucket and Prefix Options:
+# - UAT/Staging:
+#   ULCA_YOTTA_BUCKET_NAME='ulcauatdsamba'
+#   ULCA_YOTTA_FILE_PREFIX='samba-share'
+# - Production:
+#   ULCA_YOTTA_BUCKET_NAME='ulcaproduction'
+#   ULCA_YOTTA_FILE_PREFIX='ulca-prod-container'
+# - Production Samba:
+#   ULCA_YOTTA_BUCKET_NAME='ulcaproduction'
+#   ULCA_YOTTA_FILE_PREFIX='samba-share'
+# - ML Models:
+#   ULCA_YOTTA_BUCKET_NAME='ulcamodels'
+#   ULCA_YOTTA_FILE_PREFIX=''
+# - Bhashini Web:
+#   ULCA_YOTTA_BUCKET_NAME='bhashiniwebtransstorage'
+#   ULCA_YOTTA_FILE_PREFIX=''
+# All buckets use same endpoint: sosnm1.shakticloud.ai:9024
 
 KAFKA_ULCA_DS_TOPIC_PARTITIONS='16'
 KAFKA_ULCA_NOTIFIER_CONSUMER_IP_TOPIC='ulca-notifier-ip-v0'

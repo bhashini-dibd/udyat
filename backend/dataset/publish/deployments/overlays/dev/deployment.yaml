@@ -1,0 +1,106 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: publish-deployment
+  namespace: publish
+  labels:
+    app: publish
+    env: dev
+spec:
+  replicas: 2
+  revisionHistoryLimit: 10
+  progressDeadlineSeconds: 600
+
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+
+  selector:
+    matchLabels:
+      app: publish
+
+  template:
+    metadata:
+      labels:
+        app: publish
+      annotations:
+        kubectl.kubernetes.io/restartedAt: "2026-01-15T14:31:34+05:30"
+
+    spec:
+      containers:
+        - name: publish
+          image: registryharbor.bhashini.co.in/bhashini/udyat-dev/publish:12
+          imagePullPolicy: IfNotPresent
+
+          ports:
+            - containerPort: 5001
+              protocol: TCP
+
+          resources:
+            limits:
+              cpu: "3"
+              memory: 3Gi
+            requests:
+              cpu: "1"
+              memory: 2Gi
+
+          env:
+            - name: ULCA_DS_PUBLISH_DB
+              value: "ulca"
+            - name: ULCA_DS_PUBLISH_ASR_COL
+              value: "asr-dataset"
+            - name: ULCA_DS_PUBLISH_OCR_COL
+              value: "ocr-dataset"
+            - name: ULCA_DS_PUBLISH_PARALLEL_COL
+              value: "parallel-dataset"
+            - name: ULCA_DS_PUBLISH_MONOLINGUAL_COL
+              value: "monolingual-dataset"
+            - name: ULCA_SEARCH_SHARED_STORAGE_PATH
+              value: "/opt/"
+
+            - name: KAFKA_ULCA_DS_PUBLISH_IP_TOPIC
+              value: "ulca-ds-publish-ip-v0"
+            - name: KAFKA_ULCA_DS_SEARCH_IP_TOPIC
+              value: "ulca-ds-search-ip-v0"
+            - name: KAFKA_ULCA_DS_DELETE_IP_TOPIC
+              value: "ulca-ds-delete-ip-v0"
+            - name: KAFKA_ULCA_DS_PUBLISH_CONSUMER_GRP
+              value: "ulca-ds-publish-consumer-group-v0"
+            - name: KAFKA_ULCA_DS_PUBLISH_SEARCH_CONSUMER_GRP
+              value: "ulca-ds-search-consumer-group-v0"
+            - name: KAFKA_ULCA_DS_METRIC_IP_TOPIC
+              value: "org-ulca-bievent-dataset-v3"
+
+            - name: PT_TOOL_PUBLISH
+              value: "publish"
+            - name: PT_TOOL_SEARCH
+              value: "search"
+
+            - name: ULCA_ERROR_COL
+              value: "errors"
+            - name: STATUS_INPROGRESS
+              value: "In-Progress"
+            - name: STATUS_COMPLETED
+              value: "Completed"
+            - name: STATUS_FAILED
+              value: "Failed"
+            - name: STATUS_PENDING
+              value: "Pending"
+            - name: ULCA_PUBLISH_RECORD_EXPIRY_IN_SEC
+              value: "172800"
+
+          envFrom:
+            - secretRef:
+                name: ulca-yotta-creds
+
+          volumeMounts:
+            - name: model-dir
+              mountPath: /opt
+
+      volumes:
+        - name: model-dir
+          nfs:
+            server: 172.29.32.23
+            path: /u01/nfs

@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: data-metric-service
+  namespace: data-metric
+  labels:
+    app: data-metric
+spec:
+  type: ClusterIP
+  selector:
+    app: data-metric
+  ports:
+    - name: http
+      port: 80
+      targetPort: 5001

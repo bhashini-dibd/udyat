@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: error-consumer-service
+  namespace: error-consumer
+  labels:
+    app: error-consumer
+spec:
+  type: ClusterIP
+  selector:
+    app: error-consumer
+  ports:
+    - name: http
+      port: 80
+      targetPort: 5001

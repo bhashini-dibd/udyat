@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: notifier-service-service
+  namespace: notifier-service
+  labels:
+    app: notifier-service
+spec:
+  type: ClusterIP
+  selector:
+    app: notifier-service
+  ports:
+    - name: http
+      port: 80
+      targetPort: 5001
