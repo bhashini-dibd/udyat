@@ -2,6 +2,12 @@ import logging
 from datasets import load_metric
 from logging.config import dictConfig
 from models.model_metric_eval import ModelMetricEval
+from transformers import BertTokenizerFast, PreTrainedTokenizerFast
+
+# Patch to fix 'max_len' attribute error in bert_score
+if not hasattr(BertTokenizerFast, "max_len"):
+    BertTokenizerFast.max_len = property(lambda self: self.model_max_length)
+    PreTrainedTokenizerFast.max_len = property(lambda self: self.model_max_length)
 
 log = logging.getLogger('file')
 
