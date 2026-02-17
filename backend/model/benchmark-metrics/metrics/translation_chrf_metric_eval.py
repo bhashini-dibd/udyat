@@ -7,43 +7,63 @@ import os
 
 log = logging.getLogger('file')
 
+
 class TranslationChrfScoreEval(ModelMetricEval):
     """
     Implementation of metric evaluation of Translation type models
-    using Chrf
-    ChrF is MT evaluation metrics that use the F-score statistic for character n-gram matches.
+    using Chrf.
+
+    ChrF is an MT evaluation metric that uses the F-score statistic
+    for character n-gram matches.
     """
 
     def __init__(self):
-        #self.chrf_score = load_metric('chrf', revision='master')
+        # self.chrf_score = load_metric('chrf', revision='master')
         chrf_path = os.path.join(os.path.dirname(__file__), 'chrf')
         self.chrf_score = load_metric(chrf_path)
 
-
-    def machine_translation_metric_eval(self, ground_truth, machine_translation,language):
-
+    def machine_translation_metric_eval(self, ground_truth, machine_translation, language):
         try:
-            
-           if ground_truth and machine_translation:
-                conv_grnd_trth = [[i] for i in ground_truth]
-                eval_score = self.chrf_score.compute(predictions=machine_translation, references=conv_grnd_trth, lowercase=True)# MT --> list of string(sentences), GT-->list of list of string(sentences)
-                if np.isnan(eval_score['score']):
-                    log.error("Unable to calculate chrf score for translation")
-                    return None
-                else:
-                    return eval_score['score']
-           else:
+            if not ground_truth or not machine_translation:
                 return None
+
+            # Ensure equal length
+            if len(ground_truth) != len(machine_translation):
+                log.error("Ground truth and prediction length mismatch")
+                return None
+
+            # Ensure all elements are strings (important for Arrow)
+            ground_truth = [str(gt) for gt in ground_truth]
+            machine_translation = [str(mt) for mt in machine_translation]
+
+            # CHRF expects List[str], NOT List[List[str]]
+            eval_score = self.chrf_score.compute(
+                predictions=machine_translation,
+                references=ground_truth,
+                lowercase=True
+            )
+
+            score = eval_score.get("score")
+
+            if score is None or np.isnan(score):
+                log.error("Unable to calculate chrf score for translation")
+                return None
+
+            return score
+
         except Exception as e:
             log.exception(f"Exception in calculating chrf: {str(e)}")
             return None
 
-# Log config
+
+# Log configuration
 dictConfig({
     'version': 1,
-    'formatters': {'default': {
-        'format': '[%(asctime)s] {%(filename)s:%(lineno)d} %(threadName)s %(levelname)s in %(module)s: %(message)s',
-    }},
+    'formatters': {
+        'default': {
+            'format': '[%(asctime)s] {%(filename)s:%(lineno)d} %(threadName)s %(levelname)s in %(module)s: %(message)s',
+        }
+    },
     'handlers': {
         'info': {
             'class': 'logging.FileHandler',
@@ -62,7 +82,7 @@ dictConfig({
         'file': {
             'level': 'DEBUG',
             'handlers': ['info', 'console'],
-            'propagate': ''
+            'propagate': False
         }
     },
     'root': {
