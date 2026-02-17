@@ -25,7 +25,7 @@ class TranslationChrfScoreEval(ModelMetricEval):
         try:
             
            if ground_truth and machine_translation:
-                #conv_grnd_trth = [[i] for i in ground_truth]
+                conv_grnd_trth = [[i] for i in ground_truth]
                 eval_score = self.chrf_score.compute(predictions=machine_translation, references=conv_grnd_trth, lowercase=True)# MT --> list of string(sentences), GT-->list of list of string(sentences)
                 if np.isnan(eval_score['score']):
                     log.error("Unable to calculate chrf score for translation")
