@@ -11,7 +11,7 @@ log = logging.getLogger('file')
 class TranslationChrfScoreEval(ModelMetricEval):
     """
     Implementation of metric evaluation of Translation type models
-    using Chrf.
+    using ChrF.
 
     ChrF is an MT evaluation metric that uses the F-score statistic
     for character n-gram matches.
@@ -27,16 +27,30 @@ class TranslationChrfScoreEval(ModelMetricEval):
             if not ground_truth or not machine_translation:
                 return None
 
-            # Ensure equal length
             if len(ground_truth) != len(machine_translation):
                 log.error("Ground truth and prediction length mismatch")
                 return None
 
-            # Ensure all elements are strings (important for Arrow)
-            ground_truth = [str(gt) for gt in ground_truth]
-            machine_translation = [str(mt) for mt in machine_translation]
+            # 🔥 Force flatten nested lists completely
+            def flatten_text_list(data):
+                flattened = []
+                for item in data:
+                    if isinstance(item, list):
+                        if len(item) > 0:
+                            flattened.append(str(item[0]))
+                        else:
+                            flattened.append("")
+                    else:
+                        flattened.append(str(item))
+                return flattened
 
-            # CHRF expects List[str], NOT List[List[str]]
+            ground_truth = flatten_text_list(ground_truth)
+            machine_translation = flatten_text_list(machine_translation)
+
+            # Debug (optional – remove after verification)
+            log.info(f"GT sample type: {type(ground_truth[0])}")
+            log.info(f"MT sample type: {type(machine_translation[0])}")
+
             eval_score = self.chrf_score.compute(
                 predictions=machine_translation,
                 references=ground_truth,
