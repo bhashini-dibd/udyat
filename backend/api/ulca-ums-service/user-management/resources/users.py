@@ -810,6 +810,7 @@ class OnboardingAppProfile(Resource):
 class OnboardingAppUserKeyDetails(Resource):
     def get(self):
         email = request.args.get("email")
+        print(f"email :: {email}")
         authorization_header = request.headers.get("Authorization")
         print(f"ONBOARDING AUTH HEADER :: {ONBOARDING_AUTH_HEADER}")
         if authorization_header != ONBOARDING_AUTH_HEADER:
