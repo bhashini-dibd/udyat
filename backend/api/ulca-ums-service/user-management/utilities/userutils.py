@@ -721,6 +721,9 @@ class UserUtils:
     def get_email_api_keys(email,appName):
         try:
             coll = db.get_db()[USR_MONGO_COLLECTION]
+            print("EMAIL:", email)
+            print("REPR:", repr(email))
+            print("LENGTH:", len(email))
             response = coll.find_one({"email": email})
             dupStatus = True
             dupAppName = []
