@@ -684,6 +684,7 @@ class UserUtils:
     def get_user_api_keys(userId,appName):
         try:
             coll = db.get_db()[USR_MONGO_COLLECTION]
+            print("getApiKeys userID : ",userId)
             response = coll.find_one({"userID": userId})
             dupStatus = True
             dupAppName = []
@@ -771,6 +772,8 @@ class UserUtils:
     @staticmethod
     def revoke_userApiKey(userid, userapikey):
         collection = db.get_db()[USR_MONGO_COLLECTION]
+        print("revokeApiKey userid : ",userid)
+        print("revokeApiKey ulcaApiKey : ",userapikey)
         log.info(f"userapikey {userapikey}")
         revoke = collection.update({"userID":userid}, {"$pull":{"apiKeyDetails": {"ulcaApiKey" : userapikey.replace(" ","")}}})
         # log.info(revoke)

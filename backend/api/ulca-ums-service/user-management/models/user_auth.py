@@ -214,6 +214,7 @@ class UserAuthenticationModel(object):
 
     def activate_deactivate_user(self,user_email,status,from_id):
         """"Resetting activation status of verified users"""
+        print("activate-deactivate email : ",user_email)
 
         try:
             #connecting to mongo instance/collection
