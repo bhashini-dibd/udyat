@@ -178,6 +178,7 @@ class VerifyUser(Resource):
         user_id = body["userID"]
 
         log.info("Request received for user verification of {}".format(user_email))
+        print("VerifyUser email : ",user_email)
         try:
             result = authRepo.verify_user(user_email,user_id)
             if "errorID" in result:

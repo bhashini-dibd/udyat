@@ -28,6 +28,7 @@ class UserManagementModel(object):
             if len(records) != len(results):
                 return post_error("Database exception", "Some of the users were not created due to databse error", None)
             #email notification for registered users
+            print("Signup email : ", email_to_check)
             user_notified   =  UserUtils.generate_email_notification(records,EnumVals.VerificationTaskId.value) 
             if user_notified is not None:
                 return user_notified
