@@ -18,7 +18,6 @@ class TranslationChrfScoreEval(ModelMetricEval):
     """
 
     def __init__(self):
-        # self.chrf_score = load_metric('chrf', revision='master')
         chrf_path = os.path.join(os.path.dirname(__file__), 'chrf')
         self.chrf_score = load_metric(chrf_path)
 
@@ -31,7 +30,7 @@ class TranslationChrfScoreEval(ModelMetricEval):
                 log.error("Ground truth and prediction length mismatch")
                 return None
 
-            # 🔥 Force flatten nested lists completely
+            # 🔥 Flatten nested lists
             def flatten_text_list(data):
                 flattened = []
                 for item in data:
@@ -47,17 +46,22 @@ class TranslationChrfScoreEval(ModelMetricEval):
             ground_truth = flatten_text_list(ground_truth)
             machine_translation = flatten_text_list(machine_translation)
 
-            # Debug (optional – remove after verification)
+            # ✅ Apply lowercase manually (since metric doesn't support it)
+            ground_truth = [text.lower() for text in ground_truth]
+            machine_translation = [text.lower() for text in machine_translation]
+
+            # Debug logs
             log.info(f"GT sample type: {type(ground_truth[0])}")
             log.info(f"MT sample type: {type(machine_translation[0])}")
 
+            # ✅ Removed lowercase=True
             eval_score = self.chrf_score.compute(
                 predictions=machine_translation,
-                references=ground_truth,
-                lowercase=True
+                references=ground_truth
             )
 
-            score = eval_score.get("score")
+            # ✅ Handle both possible keys safely
+            score = eval_score.get("score") or eval_score.get("chrf")
 
             if score is None or np.isnan(score):
                 log.error("Unable to calculate chrf score for translation")
