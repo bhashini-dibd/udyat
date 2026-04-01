@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: benchmark-download-service
+  namespace: benchmark-download
+  labels:
+    app: benchmark-download
+spec:
+  selector:
+    app: benchmark-download
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8080
+  type: ClusterIP

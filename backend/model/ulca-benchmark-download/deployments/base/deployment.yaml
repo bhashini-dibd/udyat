@@ -1,0 +1,58 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: benchmark-download-deployment
+  namespace: benchmark-download
+  labels:
+    app: benchmark-download
+    env: prod
+spec:
+  replicas: 4
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+  selector:
+    matchLabels:
+      app: benchmark-download
+  template:
+    metadata:
+      labels:
+        app: benchmark-download
+    spec:
+      containers:
+      - name: benchmark-download
+        image: registryharbor.bhashini.co.in/bhashini/udyat-prod/benchmark-download:2
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8080
+        resources:
+          limits:
+            cpu: "4"
+            memory: "4Gi"
+          requests:
+            cpu: "2"
+            memory: "2Gi"
+
+        env:
+        - name: AES_MODEL_APIKEY_SECRETKEY
+          valueFrom:
+            secretKeyRef:
+              name: model-api-key
+              key: MODEL_APIKEY_SECRETKEY
+
+
+        envFrom:
+        - secretRef:
+            name: common-secret
+
+        volumeMounts:
+        - name: model-dir
+          mountPath: /opt
+
+      volumes:
+      - name: model-dir
+        nfs:
+          server: 172.29.128.226
+          path: /u01/nfs

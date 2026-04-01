@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ums-deployment
+  namespace: ums
+  labels:
+    app: ums
+    env: dev
+spec:
+  replicas: 2
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+  selector:
+    matchLabels:
+      app: ums
+  template:
+    metadata:
+      labels:
+        app: ums
+    spec:
+      containers:
+      - name: ums
+        image: registryharbor.bhashini.co.in/bhashini/udyat-dev/ums:5
+        ports:
+        - containerPort: 5001
+        resources:
+          limits:
+            cpu: "3"
+            memory: "3Gi"
+          requests:
+            cpu: "1"
+            memory: "2Gi"
+        env:
+        - name: API_SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: model-api-key
+              key: MODEL_APIKEY_SECRETKEY
+        envFrom:
+        - secretRef:
+            name: common-secret
+        - secretRef:
+            name: smtp-creds
+

@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: file-store-service
+  namespace: file-store
+  labels:
+    app: file-store
+spec:
+  type: ClusterIP
+  selector:
+    app: file-store
+  ports:
+    - name: http
+      port: 80
+      targetPort: 5001

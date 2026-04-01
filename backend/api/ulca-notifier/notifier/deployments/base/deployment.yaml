@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: notifier-service-deployment
+  namespace: notifier-service
+  labels:
+    app: notifier-service
+    env: prod
+spec:
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+  selector:
+    matchLabels:
+      app: notifier-service
+  template:
+    metadata:
+      labels:
+        app: notifier-service
+    spec:
+      containers:
+      - name: notifier-service
+        image: registryharbor.bhashini.co.in/bhashini/udyat-prod/notifier-service:6
+        ports:
+        - containerPort: 5001
+        resources:
+          limits:
+            cpu: "3"
+            memory: "3Gi"
+          requests:
+            cpu: "1"
+            memory: "2Gi"
+        envFrom:
+        - secretRef:
+            name: common-secret
+        - secretRef:
+            name: smtp-creds
+

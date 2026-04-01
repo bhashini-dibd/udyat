@@ -1,0 +1,62 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: publish-deployment
+  namespace: publish
+  labels:
+    app: publish
+    env: prod
+spec:
+  replicas: 2
+  revisionHistoryLimit: 10
+  progressDeadlineSeconds: 600
+
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+
+  selector:
+    matchLabels:
+      app: publish
+
+  template:
+    metadata:
+      labels:
+        app: publish
+      annotations:
+        kubectl.kubernetes.io/restartedAt: "2026-01-15T14:31:34+05:30"
+
+    spec:
+      containers:
+        - name: publish
+          image: registryharbor.bhashini.co.in/bhashini/udyat-prod/publish:12
+          imagePullPolicy: IfNotPresent
+
+          ports:
+            - containerPort: 5001
+              protocol: TCP
+
+          resources:
+            limits:
+              cpu: "3"
+              memory: 3Gi
+            requests:
+              cpu: "1"
+              memory: 2Gi      
+
+          envFrom:
+            - secretRef:
+                name: ulca-yotta-creds
+
+          volumeMounts:
+            - name: model-dir
+              mountPath: /opt
+
+      volumes:
+        - name: model-dir
+          nfs:
+            server: 172.29.32.23
+            path: /u01/nfs
+

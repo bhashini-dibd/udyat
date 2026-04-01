@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: dataset-ingest-service
+  namespace: dataset-ingest
+  labels:
+    app: dataset-ingest
+spec:
+  selector:
+    app: dataset-ingest
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8080
+  type: ClusterIP

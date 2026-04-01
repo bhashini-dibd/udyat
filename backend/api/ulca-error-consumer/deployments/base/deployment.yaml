@@ -1,0 +1,97 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: error-consumer-deployment
+  namespace: error-consumer
+  labels:
+    app: error-consumer
+    env: prod
+spec:
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+  selector:
+    matchLabels:
+      app: error-consumer
+  template:
+    metadata:
+      labels:
+        app: error-consumer
+    spec:
+      containers:
+      - name: error-consumer
+        image: registryharbor.bhashini.co.in/bhashini/udyat-prod/error-consumer:3
+        ports:
+        - containerPort: 5001
+        resources:
+          limits:
+            cpu: "3"
+            memory: "3Gi"
+          requests:
+            cpu: "1"
+            memory: "2Gi"
+        env:
+        - name: ULCA_AZURE_CONNECTION_STRING
+          valueFrom:
+            secretKeyRef:
+              key: ULCA_AZURE_CONNECTION_STRING
+              name: blob-storage-creds
+        - name: ULCA_AZURE_FILE_CONTAINER
+          valueFrom:
+            secretKeyRef:
+              key: ULCA_AZURE_FILE_CONTAINER
+              name: common-secret
+        - name: ULCA_AZURE_ACCOUNT_NAME
+          valueFrom:
+            secretKeyRef:
+              key: ULCA_AZURE_ACCOUNT_NAME
+              name: common-secret
+        - name: ULCA_AWS_S3_ACCESS_KEY
+          valueFrom:
+            secretKeyRef:
+              key: ULCA_AWS_S3_ACCESS_KEY
+              name: ulca-bucket-iam-creds
+        - name: ULCA_AWS_S3_SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              key: ULCA_AWS_S3_SECRET_KEY
+              name: ulca-bucket-iam-creds
+        - name: ULCA_AWS_BUCKET_NAME
+          value: ulca-datasets
+        - name: ULCA_OBJECT_STORE
+          value: AZURE
+        - name: STATUS_INPROGRESS
+          value: In-Progress
+        - name: STATUS_COMPLETED
+          value: Completed
+        - name: STATUS_FAILED
+          value: Failed
+        - name: STATUS_PENDING
+          value: Pending
+        - name: ULCA_ERROR_RECORD_EXPIRY_IN_SEC
+          value: "259200"
+        - name: ULCA_ERROR_CRON_JOB_INTERVAL_SEC
+          value: "30"
+        - name: ULCA_ERROR_REDIS_DB
+          value: "5"
+        - name: ULCA_ERROR_CONSUMER_COUNT
+          value: "4"
+        - name: ULCA_ERROR_BATCH_SIZE
+          value: "10000"
+        envFrom:
+        - secretRef:
+            name: common-secret
+        volumeMounts:
+        - name: model-dir
+          mountPath: /opt
+
+      volumes:
+      - name: model-dir
+        nfs:
+          server: 172.29.128.226
+          path: /u01/nfs
+
+

@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: benchmark-metrics-service
+  namespace: benchmark-metrics
+  labels:
+    app: benchmark-metrics
+spec:
+  type: ClusterIP
+  selector:
+    app: benchmark-metrics
+  ports:
+    - name: http
+      port: 80
+      targetPort: 5001
