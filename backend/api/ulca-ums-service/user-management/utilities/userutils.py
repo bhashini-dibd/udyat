@@ -635,7 +635,7 @@ class UserUtils:
                 # msg.attach(part)
 
                 # Connect to the SMTP server
-                with smtplib.SMTP('smtp.azurecomm.net', 587) as server:
+                with smtplib.SMTP('smtp.zeptomail.in', 587) as server:
                     server.starttls()
                     print(f"SENDER USERNAME :: {SENDER_USERNAME}")
                     print(f"SENDER PASSWORD :: {SENDER_PASSWORD}")
@@ -684,6 +684,7 @@ class UserUtils:
     def get_user_api_keys(userId,appName):
         try:
             coll = db.get_db()[USR_MONGO_COLLECTION]
+            print("getApiKeys userID : ",userId)
             response = coll.find_one({"userID": userId})
             dupStatus = True
             dupAppName = []
@@ -721,6 +722,9 @@ class UserUtils:
     def get_email_api_keys(email,appName):
         try:
             coll = db.get_db()[USR_MONGO_COLLECTION]
+            print("EMAIL:", email)
+            print("REPR:", repr(email))
+            print("LENGTH:", len(email))
             response = coll.find_one({"email": email})
             dupStatus = True
             dupAppName = []
@@ -768,6 +772,8 @@ class UserUtils:
     @staticmethod
     def revoke_userApiKey(userid, userapikey):
         collection = db.get_db()[USR_MONGO_COLLECTION]
+        print("revokeApiKey userid : ",userid)
+        print("revokeApiKey ulcaApiKey : ",userapikey)
         log.info(f"userapikey {userapikey}")
         revoke = collection.update({"userID":userid}, {"$pull":{"apiKeyDetails": {"ulcaApiKey" : userapikey.replace(" ","")}}})
         # log.info(revoke)
@@ -856,6 +862,23 @@ class UserUtils:
     @staticmethod
     def pushServiceProvider(generatedApiKeys,ulcaApiKey,userServiceProviderName, dataTracking):
         collections = db.get_db()[USR_MONGO_COLLECTION]
+        
+        # Check existence to prevent duplicates
+        query_exists = {
+            "apiKeyDetails": {
+                "$elemMatch": {
+                    "ulcaApiKey": ulcaApiKey,
+                    "serviceProviderKeys.serviceProviderName": userServiceProviderName
+                }
+            }
+        }
+        if collections.find_one(query_exists):
+            log.info(f"ServiceProviderKey for {userServiceProviderName} already exists. Skipping push.")
+            # Return a dummy success structure so flow continues, or handle as needed
+            # For now, returning structure indicative of 'no modification but success'
+            servProvKe = {"serviceProviderKeys":[{"serviceProviderName":userServiceProviderName,"dataTracking": dataTracking,"inferenceApiKey":generatedApiKeys}]}
+            return {"nModified": 0, "updatedExisting": True}, servProvKe
+
         updateDoc = collections.update({"apiKeyDetails.ulcaApiKey":ulcaApiKey},{"$push":{"apiKeyDetails.$.serviceProviderKeys":{"serviceProviderName":userServiceProviderName,"dataTracking":dataTracking,"inferenceApiKey":generatedApiKeys}}})
         servProvKe = {"serviceProviderKeys":[{"serviceProviderName":userServiceProviderName,"dataTracking": dataTracking,"inferenceApiKey":generatedApiKeys}]}
         return json.loads(json_util.dumps(updateDoc)), servProvKe
@@ -1011,6 +1034,7 @@ class UserUtils:
         elif pipelineID == None:
             return post_error("400", "pipelineID does not exists.   Please provide a valid pipelineId", None), 400
         user_document,email  = UserUtils.get_userDoc(userID) #UMS
+        print(f"[Generate-v2] email_id :: {email}")
         if isinstance(user_document, list) and user_document:
             #log.info("DETAILS:",user_document,body)
             if not any(usr['ulcaApiKey'] == udyatApiKey for usr in user_document):
@@ -1035,8 +1059,8 @@ class UserUtils:
                         generatedSecretKeys = UserUtils.get_service_provider_keys(email, usr["appName"],serviceProviderKeyUrl,decryptedKeys, dataTracking)
                         addServiceKeys, servProvAdded = UserUtils.pushServiceProvider(generatedSecretKeys, udyatApiKey,serviceProviderName, dataTracking)
                         returnServiceProviderKey = {"serviceProviderKeys":servProvAdded["serviceProviderKeys"][0]}
-                        if addServiceKeys["nModified"] == 1 and addServiceKeys["updatedExisting"] == True:
-                            returnServiceProviderKey["message"] = "Service Provider Key created"
+                        if (addServiceKeys["nModified"] == 1) or (addServiceKeys.get("updatedExisting") == True):
+                            returnServiceProviderKey["message"] = "Service Provider Key created or retrieved"
                         log.info(addServiceKeys)
             returnServiceProviderKey['ulcaApiKey'] = udyatApiKey
             return returnServiceProviderKey
@@ -1063,6 +1087,7 @@ class UserUtils:
 
         # Retrieve user details 
         user_document,email  = UserUtils.get_userDoc(userID) #UMS
+        print(f"[Remove-v2] email_id :: {email}")
         if not user_document and not email:
             return post_error("400", "userID does not exists.   Please provide a valid userID", None), 400
         if isinstance(user_document, list) and user_document:
