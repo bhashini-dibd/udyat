@@ -488,20 +488,20 @@ class ToggleDataTracking(Resource):
         
         req_body = {"emailId" : userEmail, "appName" :  appName_,'dataTracking' : boole}
 
-        log.info(f"PATCH Request URL: {patch_url}")
-        log.info(f"PATCH Request Headers: {decrypt_headers}")
-        log.info(f"PATCH Request Body: {req_body}")
+        print(f"PATCH Request URL: {patch_url}")
+        print(f"PATCH Request Headers: {decrypt_headers}")
+        print(f"PATCH Request Body: {req_body}")
 
         patch_req = requests.patch(url = patch_url, headers=decrypt_headers, json=req_body)
 
-        log.info(f"PATCH Response Status: {patch_req.status_code}")
-        log.info(f"PATCH Response Headers: {patch_req.headers}")
+        print(f"PATCH Response Status: {patch_req.status_code}")
+        print(f"PATCH Response Headers: {patch_req.headers}")
         try:
-          log.info(f"PATCH Response JSON: {patch_req.json()}")
+          print(f"PATCH Response JSON: {patch_req.json()}")
         except ValueError:
-          log.info(f"PATCH Response Text: {patch_req.text}")
+          print(f"PATCH Response Text: {patch_req.text}")
 
-          log.info(f"Patch Request Response :: {patch_req}...............{patch_req.json()} .............{patch_req.status_code}")
+          print(f"Patch Request Response :: {patch_req}...............{patch_req.json()} .............{patch_req.status_code}")
         if (patch_req.json()['status']) == 'success':
             toggled_matched, toggle_modified = UserUtils.updateDataTrackingValuePull(body['userID'], body['ulcaApiKey'], body['serviceProviderName'], boole)
             if toggle_modified == 1:
