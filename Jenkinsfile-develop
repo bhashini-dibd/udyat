@@ -1,6 +1,7 @@
 pipeline {
-    agent any
-
+    agent {
+        label 'dev-agent'
+    }
     parameters {
 
         string(
