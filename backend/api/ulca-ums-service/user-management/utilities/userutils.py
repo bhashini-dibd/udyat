@@ -872,15 +872,29 @@ class UserUtils:
                 }
             }
         }
-        if collections.find_one(query_exists):
-            log.info(f"ServiceProviderKey for {userServiceProviderName} already exists. Skipping push.")
+        #if collections.find_one(query_exists):
+           # log.info(f"ServiceProviderKey for {userServiceProviderName} already exists. Skipping push.")
             # Return a dummy success structure so flow continues, or handle as needed
             # For now, returning structure indicative of 'no modification but success'
-            servProvKe = {"serviceProviderKeys":[{"serviceProviderName":userServiceProviderName,"dataTracking": dataTracking,"inferenceApiKey":generatedApiKeys}]}
+            #servProvKe = {"serviceProviderKeys":[{"serviceProviderName":userServiceProviderName,"dataTracking": dataTracking,"inferenceApiKey":generatedApiKeys,"active": True}]}
+            #return {"nModified": 0, "updatedExisting": True}, servProvKe
+        existing_doc = collections.find_one(query_exists)
+        if existing_doc:
+            log.info(f"ServiceProviderKey for {userServiceProviderName} already exists. Skipping push.")
+            existing_active = True
+            for api_key_detail in existing_doc.get("apiKeyDetails", []):
+                if api_key_detail.get("ulcaApiKey") == ulcaApiKey:
+                    for spk in api_key_detail.get("serviceProviderKeys", []):
+                        if spk.get("serviceProviderName") == userServiceProviderName:
+                            existing_active = spk.get("active", True)
+                            break
+                    break
+            servProvKe = {"serviceProviderKeys":[{"serviceProviderName":userServiceProviderName,"dataTracking": dataTracking,"inferenceApiKey":generatedApiKeys,"active": existing_active}]}
             return {"nModified": 0, "updatedExisting": True}, servProvKe
+    
 
-        updateDoc = collections.update({"apiKeyDetails.ulcaApiKey":ulcaApiKey},{"$push":{"apiKeyDetails.$.serviceProviderKeys":{"serviceProviderName":userServiceProviderName,"dataTracking":dataTracking,"inferenceApiKey":generatedApiKeys}}})
-        servProvKe = {"serviceProviderKeys":[{"serviceProviderName":userServiceProviderName,"dataTracking": dataTracking,"inferenceApiKey":generatedApiKeys}]}
+        updateDoc = collections.update({"apiKeyDetails.ulcaApiKey":ulcaApiKey},{"$push":{"apiKeyDetails.$.serviceProviderKeys":{"serviceProviderName":userServiceProviderName,"dataTracking":dataTracking,"inferenceApiKey":generatedApiKeys,"active": True}}})
+        servProvKe = {"serviceProviderKeys":[{"serviceProviderName":userServiceProviderName,"dataTracking": dataTracking,"inferenceApiKey":generatedApiKeys,"active": True}]}
         return json.loads(json_util.dumps(updateDoc)), servProvKe
 
     @staticmethod
@@ -949,6 +963,8 @@ class UserUtils:
                 if apiK['appName'] == appName and 'serviceProviderKeys' in apiK.keys():
                     for service in apiK['serviceProviderKeys']:
                         if service['serviceProviderName'] == serviceProvider:
+                            if service.get('active') == False:
+                                return None
                             return service['inferenceApiKey']['value']
         else:
             return None
