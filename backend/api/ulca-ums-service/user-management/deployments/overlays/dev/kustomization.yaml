@@ -11,6 +11,6 @@ patchesStrategicMerge:
   - deployment.yaml    
 
 images:
-  - name: registryharbor.bhashini.co.in/bhashini/udyat-dev/ums
+  - name: ulca-ums-service
     newName: registryharbor.bhashini.co.in/bhashini/udyat-dev/ulca-ums-service
     newTag: latest
