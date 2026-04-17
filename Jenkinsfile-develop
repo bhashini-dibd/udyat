@@ -269,7 +269,7 @@ pipeline {
                 dir("${K8S_PATH}/overlays/${ENV}") {
                     sh """
                       kustomize build . | \
-                      sed 's|image:.*${params.SERVICE_NAME}.*|image: ${HARBOR_REGISTRY}/${REPO}/${params.SERVICE_NAME}:${IMAGE_TAG}|' | \
+                      sed 's|image:.*${params.SERVICE_NAME}.*|image: ${HARBOR_REGISTRY}/${REPO}/${params.SERVICE_NAME}:${IMAGE_TAG}|' 
                      
                     """
                 }
