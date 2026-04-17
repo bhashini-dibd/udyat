@@ -270,9 +270,7 @@ pipeline {
                     sh """
                       kustomize build . | \
                       sed 's|image:.*${params.SERVICE_NAME}.*|image: ${HARBOR_REGISTRY}/${REPO}/${params.SERVICE_NAME}:${IMAGE_TAG}|' | \
-                      kubectl apply -f -
-                  
-                      kubectl rollout status deployment/${DEPLOYMENT} -n ${NAMESPACE}
+                     
                     """
                 }
             }
