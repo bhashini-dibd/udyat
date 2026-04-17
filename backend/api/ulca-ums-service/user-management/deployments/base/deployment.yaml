@@ -22,7 +22,7 @@ spec:
         app: ums
     spec:
       containers:
-      - name: ulca-ums-service
+      - name: ums
         image: ulca-ums-service
         ports:
         - containerPort: 5001
