@@ -268,7 +268,7 @@ pipeline {
             steps {
                 dir("${K8S_PATH}/overlays/${ENV}") {
                     sh """
-                     kustomize edit set image registryharbor.bhashini.co.in/bhashini/udyat-dev/ums=${HARBOR_REGISTRY}/${REPO}/${params.SERVICE_NAME}:${IMAGE_TAG}
+                     kustomize edit set image ${params.SERVICE_NAME}=${HARBOR_REGISTRY}/${REPO}/${params.SERVICE_NAME}:${IMAGE_TAG}
                     """
                 }
             }
