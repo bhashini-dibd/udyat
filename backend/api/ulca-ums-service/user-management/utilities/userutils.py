@@ -1120,3 +1120,12 @@ class UserUtils:
             return res.getresjson(), 200
         else:
             return post_error("400", "Unable to revoke service provider details, please check credentials", None), 400
+    
+    @staticmethod
+    def updateServiceProviderKeyActiveValue(userID, ulcaApiKey, serviceProviderName, activeVal):
+        collections = db.get_db()[USR_MONGO_COLLECTION]
+        query_to_update = {"userID":userID,"apiKeyDetails.ulcaApiKey":ulcaApiKey,"apiKeyDetails.serviceProviderKeys.serviceProviderName":serviceProviderName}
+        update = {"$set":{"apiKeyDetails.$[].serviceProviderKeys.$[elem].active": activeVal}}
+        array_filters = [{"elem.serviceProviderName": serviceProviderName}]
+        collectUpdate = collections.update_one(query_to_update, update, array_filters= array_filters)
+        return collectUpdate.matched_count, collectUpdate.modified_count
