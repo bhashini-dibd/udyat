@@ -193,6 +193,7 @@ class GetApiKey(Resource):
 
 class GetApiKeysForProfile(Resource):
     def post(self):
+        print(f"Enter to GetApiKeysForProfile!")
         body = request.get_json()
         if "userID" not in body.keys():
             return post_error("Data Missing", "users not found", None), 400
