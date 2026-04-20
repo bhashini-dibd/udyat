@@ -877,3 +877,70 @@ class OnboardingAppUserDetails(Resource):
         except Exception as e:
             log.exception("Database connection exception | {} ".format(str(e)))
             return post_error("Database  exception", "An error occurred while processing on the database:{}".format(str(e)), None)
+
+
+
+class ActivateDeactivateServiceProviderKey(Resource):
+    def post(self):
+        body = request.get_json()
+        if "serviceProviderName" not in body.keys():
+            return post_error("400", "Please provide serviceProviderName", None), 400
+        if "userID" not in body.keys():
+            return post_error("400", "Please provide userID", None), 400
+        if "ulcaApiKey" not in body.keys():
+            return post_error("400", "Please provide ulcaApiKey", None), 400
+        if "dataTracking" not in body.keys():
+            return post_error("400", "Please provide value for dataTracking", None), 400  
+        if isinstance(body['dataTracking'], bool):
+            boole = body['dataTracking']
+        else:
+            return post_error("400", "Please provide Boolean value of dataTracking", None), 400
+        if "active" not in body.keys():
+            return post_error("400", "Please provide value for active", None), 400  
+        if isinstance(body['active'], bool):
+            active_bool = body['active']
+        else:
+            return post_error("400", "Please provide Boolean value for active", None), 400
+
+        #get email from userID, appName from unique ulcaApiKey, masterKeyDetails for headers auth fropm pipeLine, apiKeyUrl from pipeline.
+        #ONly success result from patch request needs to be sent to frontEnd.
+        #getEmail from userID
+        userEmail, appName_ = UserUtils.getUserEmail(body['userID'],body['ulcaApiKey'])
+        if not userEmail or not appName_:
+           return post_error("400", "Error in fetching Details, please check the userID and ulcaApiKey", None), 400
+        pipeline_doc = UserUtils.getPipelinefromSrvcPN(body['serviceProviderName'])
+        if not pipeline_doc and not isinstance(pipeline_doc,dict):
+            return post_error("400", "Please check the Service Provider Name", None), 400
+        pipeline_masterkeys = []#dict for headers
+        pipeline_masterkeys.append(pipeline_doc['inferenceEndPoint']['masterApiKey']['name'])
+        pipeline_masterkeys.append(pipeline_doc['inferenceEndPoint']['masterApiKey']['value'])
+        patch_url = pipeline_doc["apiEndPoints"]["apiKeyUrl"]
+        decrypt_headers = UserUtils.decryptAes(SECRET_KEY,pipeline_masterkeys)
+        
+        req_body = {"emailId" : userEmail, "appName" :  appName_,'dataTracking' : boole,"active" : active_bool}
+
+        print(f"Activate/Decactivate Request URL: {patch_url}")
+        print(f"Activate/Decactivate Request Headers: {decrypt_headers}")
+        print(f"Activate/Decactivate Request Body: {req_body}")
+
+        patch_req = requests.patch(url = patch_url, headers=decrypt_headers, json=req_body)
+
+        print(f"Activate/Decactivate Response Status: {patch_req.status_code}")
+        print(f"Activate/Decactivate Response Headers: {patch_req.headers}")
+        try:
+          print(f"Activate/Decactivate Response JSON: {patch_req.json()}")
+        except ValueError:
+          print(f"Activate/Decactivate Response Text: {patch_req.text}")
+
+          print(f"Activate/Decactivate Request Response :: {patch_req}...............{patch_req.json()} .............{patch_req.status_code}")
+        if (patch_req.json()['status']) == 'success':
+            active_matched, active_modified = UserUtils.updateServiceProviderKeyActiveValue(body['userID'], body['ulcaApiKey'], body['serviceProviderName'], boole)
+            if active_modified == 1:
+                res = CustomResponse(Status.SERVICE_PROVIDER_KEY_STATUS_CHANGE_SUCCESS.value, "SUCCESS")
+                return res.getresjson(), 200
+            elif active_modified == 0 and active_matched == 1:
+                res = CustomResponse(Status.SERVICE_PROVIDER_KEY_STATUS_CHANGE_SUCCESS.value, "SUCCESS")
+                return res.getresjson(), 200
+
+        elif 'success' not in patch_req.json().keys():
+            return post_error("400", "Unable to change status of active at the moment, please try again", None), 400
