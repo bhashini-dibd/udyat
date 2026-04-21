@@ -1125,6 +1125,9 @@ class UserUtils:
     def updateServiceProviderKeyActiveValue(userID, ulcaApiKey, serviceProviderName, activeVal):
         collections = db.get_db()[USR_MONGO_COLLECTION]
         print(f"Updating in udyat database::")
+        print(f"userID : {userID} ,ulcaApiKey : {ulcaApiKey} , serviceProviderName : {serviceProviderName},activeVal: {activeVal} ")
+        docs = list(collections.find({"userID": userID}))
+        print("found docs:", docs)
         #query_to_update = {"userID":userID,"apiKeyDetails.ulcaApiKey":ulcaApiKey,"apiKeyDetails.serviceProviderKeys.serviceProviderName":serviceProviderName}
         query_to_update = {"userID":userID,"apiKeyDetails.ulcaApiKey": ulcaApiKey}
         update = {"$set":{"apiKeyDetails.$[key].serviceProviderKeys.$[elem].active": activeVal}}
@@ -1132,4 +1135,5 @@ class UserUtils:
         array_filters = [{"key.ulcaApiKey": ulcaApiKey},{"elem.serviceProviderName": serviceProviderName}]
         collectUpdate = collections.update_one(query_to_update, update, array_filters= array_filters)
         #collectUpdate = collections.update_one(query_to_update, update)
+        print("matched:", collectUpdate.matched_count, "modified:", collectUpdate.modified_count)
         return collectUpdate.matched_count, collectUpdate.modified_count
