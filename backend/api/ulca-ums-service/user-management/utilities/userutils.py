@@ -1124,6 +1124,7 @@ class UserUtils:
     @staticmethod
     def updateServiceProviderKeyActiveValue(userID, ulcaApiKey, serviceProviderName, activeVal):
         collections = db.get_db()[USR_MONGO_COLLECTION]
+        print(f"Updating in udyat database::")
         #query_to_update = {"userID":userID,"apiKeyDetails.ulcaApiKey":ulcaApiKey,"apiKeyDetails.serviceProviderKeys.serviceProviderName":serviceProviderName}
         query_to_update = {"userID":userID,"apiKeyDetails.ulcaApiKey":ulcaApiKey}
         update = {"$set":{"apiKeyDetails.$.serviceProviderKeys.$[elem].active": activeVal}}
