@@ -935,7 +935,7 @@ class ActivateDeactivateServiceProviderKey(Resource):
 
           print(f"Activate/Decactivate Request Response :: {patch_req}...............{patch_req.json()} .............{patch_req.status_code}")
         if (patch_req.json()['status']) == 'success':
-            active_matched, active_modified = UserUtils.updateServiceProviderKeyActiveValue(body['userID'], body['ulcaApiKey'], body['serviceProviderName'], boole)
+            active_matched, active_modified = UserUtils.updateServiceProviderKeyActiveValue(body['userID'], body['ulcaApiKey'], body['serviceProviderName'], active_bool)
             if active_modified == 1:
                 res = CustomResponse(Status.SERVICE_PROVIDER_KEY_STATUS_CHANGE_SUCCESS.value, "SUCCESS")
                 return res.getresjson(), 200
