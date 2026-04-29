@@ -13,5 +13,5 @@ WORKDIR /app
 COPY --from=builder /build/target/ulca-model-api.jar /app/ulca-model-api.jar
 USER appuser
 EXPOSE 8080
-ENTRYPOINT ["java","-jar","/app/app.jar"]
+ENTRYPOINT ["java","-jar","/app/ulca-model-api.jar"]
 
