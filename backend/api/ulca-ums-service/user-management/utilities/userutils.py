@@ -892,9 +892,9 @@ class UserUtils:
     @staticmethod
     def updateDataTrackingValuePull(userID, ulcaApiKey, serviceProviderName, dataTrackingVal):
         collections = db.get_db()[USR_MONGO_COLLECTION]
-        query_to_update = {"userID":userID,"apiKeyDetails.ulcaApiKey":ulcaApiKey,"apiKeyDetails.serviceProviderKeys.serviceProviderName":serviceProviderName}
-        update = {"$set":{"apiKeyDetails.$[].serviceProviderKeys.$[elem].dataTracking": dataTrackingVal}}
-        array_filters = [{"elem.serviceProviderName": serviceProviderName}]
+        query_to_update = {"userID":userID,"apiKeyDetails.ulcaApiKey":ulcaApiKey}
+        update = {"$set":{"apiKeyDetails.$[key].serviceProviderKeys.$[elem].dataTracking": dataTrackingVal}}
+        array_filters = [{"key.ulcaApiKey": ulcaApiKey},{"elem.serviceProviderName": serviceProviderName}]
         collectUpdate = collections.update_one(query_to_update, update, array_filters= array_filters)
         return collectUpdate.matched_count, collectUpdate.modified_count
 
