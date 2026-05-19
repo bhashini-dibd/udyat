@@ -23,7 +23,7 @@ spec:
     spec:
       containers:
       - name: asr-model-compute
-        image: registryharbor.bhashini.co.in/bhashini/udyat-prod/asr-model-compute:latest
+        image: ULCA
         ports:
         - containerPort: 5001
         resources:
