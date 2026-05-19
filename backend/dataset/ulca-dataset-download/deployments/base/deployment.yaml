@@ -58,7 +58,7 @@ spec:
 
       containers:
       - name: dataset-download
-        image: registryharbor.bhashini.co.in/bhashini/udyat-prod/dataset-download:1
+        image: ULCA
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 8080
