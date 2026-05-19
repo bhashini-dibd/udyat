@@ -5,7 +5,7 @@ namespace: asr-model-compute
 
 resources:
   - ../../base
-  - service.yaml
+  
 
 patchesStrategicMerge:
   - deployment.yaml
