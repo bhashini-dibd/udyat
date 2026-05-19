@@ -58,7 +58,7 @@ spec:
 
       containers:
       - name: dataset-download
-        image: registryharbor.bhashini.co.in/bhashini/udyat-dev/dataset-download:1
+        image: ULCA
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 8080
@@ -71,7 +71,7 @@ spec:
             memory: "5Gi"
         envFrom:
         - secretRef:
-            name: common-secret
+            name: dataset-download-secret
         env:
         - name: JAVA_HOME
           value: /opt/java
