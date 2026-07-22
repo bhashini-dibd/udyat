@@ -768,6 +768,113 @@ class UserUtils:
         details = collection.update({"userID":user}, {"$push": {"apiKeyDetails":{"appName":appName,"ulcaApiKey":apikey,"createdTimestamp":str(int(time.time())),"serviceProviderKeys":serviceProviderKey}}})
         return details
 
+    # === TRANSFER-APP-KEYS-FEATURE START (remove this whole block to revert) ===
+    # Order of use: get_user_by_email -> extract_appkey_entries -> get_duplicate_appNames
+    # -> has_capacity_for_keys -> remove_appkeys_by_email -> add_appkeys_by_email -> transfer_app_keys (orchestrator)
+
+    @staticmethod
+    def get_user_by_email(email):
+        """Fetch a single user document by email."""
+        coll = db.get_db()[USR_MONGO_COLLECTION]
+        return coll.find_one({"email": email})
+
+    @staticmethod
+    def extract_appkey_entries(userDoc, appNames):
+        """Split apiKeyDetails entries of userDoc into (found entries, missing appNames)."""
+        existingEntries = userDoc.get("apiKeyDetails", []) if userDoc else []
+        found = [entry for entry in existingEntries if entry.get("appName") in appNames]
+        foundNames = [entry.get("appName") for entry in found]
+        missing = [name for name in appNames if name not in foundNames]
+        return found, missing
+
+    @staticmethod
+    def get_duplicate_appNames(userDoc, appNames):
+        """Return which of appNames already exist in userDoc's apiKeyDetails."""
+        existingEntries = userDoc.get("apiKeyDetails", []) if userDoc else []
+        existingNames = [entry.get("appName") for entry in existingEntries]
+        return [name for name in appNames if name in existingNames]
+
+    @staticmethod
+    def has_capacity_for_keys(userDoc, numNewKeys):
+        """Check destination user won't exceed MAX_API_KEY after adding numNewKeys entries."""
+        existingEntries = userDoc.get("apiKeyDetails", []) if userDoc else []
+        return (len(existingEntries) + numNewKeys) <= MAX_API_KEY
+
+    @staticmethod
+    def remove_appkeys_by_email(email, appNames):
+        """Pull apiKeyDetails entries matching any of appNames from a user's document."""
+        coll = db.get_db()[USR_MONGO_COLLECTION]
+        return coll.update(
+            {"email": email},
+            {"$pull": {"apiKeyDetails": {"appName": {"$in": appNames}}}}
+        )
+
+    @staticmethod
+    def add_appkeys_by_email(email, entries):
+        """Push a list of apiKeyDetails entries into a user's document."""
+        coll = db.get_db()[USR_MONGO_COLLECTION]
+        return coll.update(
+            {"email": email},
+            {"$push": {"apiKeyDetails": {"$each": entries}}}
+        )
+
+    @staticmethod
+    def transfer_app_keys(sourceEmail, destinationEmail, appNames):
+        """
+        Move apiKeyDetails entries for the given appNames from sourceEmail's
+        user document to destinationEmail's, preserving each entry's full
+        content (ulcaApiKey, serviceProviderKeys, createdTimestamp...).
+        Returns (responseBody, success_bool).
+        """
+        try:
+            if sourceEmail == destinationEmail:
+                return post_error("400", "sourceEmail and destinationEmail cannot be the same", None), False
+
+            if not isinstance(appNames, list) or len(appNames) == 0:
+                return post_error("400", "appNames must be a non-empty list", None), False
+
+            sourceUser = UserUtils.get_user_by_email(sourceEmail)
+            if not sourceUser:
+                return post_error("400", "sourceEmail is not a registered user", None), False
+
+            destinationUser = UserUtils.get_user_by_email(destinationEmail)
+            if not destinationUser:
+                return post_error("400", "destinationEmail is not a registered user", None), False
+
+            entriesToMove, missingAppNames = UserUtils.extract_appkey_entries(sourceUser, appNames)
+            if missingAppNames:
+                return post_error("400", f"appName(s) not found for sourceEmail: {missingAppNames}", None), False
+
+            duplicateAppNames = UserUtils.get_duplicate_appNames(destinationUser, appNames)
+            if duplicateAppNames:
+                return post_error("400", f"appName(s) already exist for destinationEmail: {duplicateAppNames}", None), False
+
+            if not UserUtils.has_capacity_for_keys(destinationUser, len(entriesToMove)):
+                return post_error("400", "Maximum Key Limit Reached for destinationEmail", None), False
+
+            pullResult = UserUtils.remove_appkeys_by_email(sourceEmail, appNames)
+            if pullResult.get("nModified") != 1:
+                return post_error("400", "Unable to remove appName(s) from sourceEmail", None), False
+
+            pushResult = UserUtils.add_appkeys_by_email(destinationEmail, entriesToMove)
+            if pushResult.get("nModified") != 1:
+                # rollback: push the entries back to source
+                UserUtils.add_appkeys_by_email(sourceEmail, entriesToMove)
+                return post_error("400", "Unable to add appName(s) to destinationEmail, transfer rolled back", None), False
+
+            log.info(f"Transferred appNames {appNames} from {sourceEmail} to {destinationEmail}")
+            res = CustomResponse(Status.SUCCESS.value, {
+                "appNames": appNames,
+                "sourceEmail": sourceEmail,
+                "destinationEmail": destinationEmail
+            })
+            return res.getresjson(), True
+
+        except Exception as e:
+            log.exception("Error transferring appNames")
+            return post_error("Database exception", f"Exception occurred: {str(e)}", None), False
+    # === TRANSFER-APP-KEYS-FEATURE END ===
+
 
     @staticmethod
     def revoke_userApiKey(userid, userapikey):

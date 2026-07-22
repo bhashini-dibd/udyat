@@ -945,3 +945,18 @@ class ActivateDeactivateServiceProviderKey(Resource):
 
         elif 'success' not in patch_req.json().keys():
             return post_error("400", "Unable to change status of active at the moment, please try again", None), 400
+
+
+# === TRANSFER-APP-KEYS-FEATURE START (remove this whole block to revert) ===
+class TransferAppKeys(Resource):
+    def post(self):
+        body = request.get_json()
+        for field in ("sourceEmail", "destinationEmail", "appNames"):
+            if field not in body.keys():
+                return post_error("400", f"Please provide {field}", None), 400
+
+        result, success = UserUtils.transfer_app_keys(
+            body["sourceEmail"], body["destinationEmail"], body["appNames"]
+        )
+        return result, 200 if success else 400
+# === TRANSFER-APP-KEYS-FEATURE END ===
