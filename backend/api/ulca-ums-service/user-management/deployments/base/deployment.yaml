@@ -23,7 +23,7 @@ spec:
     spec:
       containers:
       - name: ums
-        image: registryharbor.bhashini.co.in/bhashini/udyat-prod/ums:5
+        image: ULCA
         ports:
         - containerPort: 5001
         resources:
