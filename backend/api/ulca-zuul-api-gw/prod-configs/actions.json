@@ -551,6 +551,14 @@
       "active": true,
       "whiteList": true,
       "description": "API to fetch all tasks pipeline with script"
+    },
+    {
+      "id": "b3374e69-ba5c-43e1-a076-d6110dd54c8c",
+      "uri": "/ulca/user-mgmt/v1/users/activateDeactivateServiceProviderKey",
+      "module": "ULCA-UMS",
+      "active": true,
+      "whiteList": false,
+      "description": "API to activate/deactivate inferneceApiKey."
     }
    
   ]
