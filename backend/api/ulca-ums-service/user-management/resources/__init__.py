@@ -23,6 +23,7 @@ from .users import (
     GenerateServiceProviderKeyWithoutLogin, 
     RemoveServiceProviderKeyWithoutLogin, 
     OnboardingAppUserDetails,
-    OnboardingAppUserKeyDetails
+    OnboardingAppUserKeyDetails,
+    ActivateDeactivateServiceProviderKey
     )
 from .user_auth import UserLogin, UserLogout, ApiKeySearch, ForgotPassword, ResetPassword, VerifyUser, ActivateDeactivateUser, VerifyToken

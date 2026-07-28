@@ -4,3 +4,8 @@ kind: Kustomization
 namespace: ums
 resources:
   - ../../base
+
+images:
+  - name: registryharbor.bhashini.co.in/bhashini/udyat-prod/ums
+    newName: registryharbor.bhashini.co.in/bhashini/udyat-prod/ulca-ums-service
+    newTag: latest

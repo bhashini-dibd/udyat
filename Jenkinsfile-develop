@@ -1,6 +1,7 @@
 pipeline {
-    agent any
-
+    agent {
+        label 'dev-agent'
+    }
     parameters {
 
         string(
@@ -267,11 +268,7 @@ pipeline {
             steps {
                 dir("${K8S_PATH}/overlays/${ENV}") {
                     sh """
-                      kustomize build . | \
-                      sed 's|image:.*${params.SERVICE_NAME}.*|image: ${HARBOR_REGISTRY}/${REPO}/${params.SERVICE_NAME}:${IMAGE_TAG}|' | \
-                      kubectl apply -f -
-                  
-                      kubectl rollout status deployment/${DEPLOYMENT} -n ${NAMESPACE}
+                     kustomize edit set image ULCA=${HARBOR_REGISTRY}/${REPO}/${params.SERVICE_NAME}:${IMAGE_TAG}
                     """
                 }
             }
@@ -284,7 +281,7 @@ pipeline {
             steps {
                 withKubeConfig([
                     credentialsId: params.ENV == 'dev'
-                        ? 'udyat-dev-cluster'
+                        ? 'Udyat-dev-cluster'
                         : 'udyat-cluster-prod'
                 ]) {
                     dir("${K8S_PATH}/overlays/${ENV}") {

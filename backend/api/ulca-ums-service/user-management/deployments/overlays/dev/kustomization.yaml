@@ -5,7 +5,12 @@ namespace: ums
 
 resources:
   - ../../base
-  - service.yaml       
+        
 
 patchesStrategicMerge:
   - deployment.yaml    
+
+images:
+  - name: ulca-ums-service
+    newName: registryharbor.bhashini.co.in/bhashini/udyat-dev/ulca-ums-service
+    newTag: latest

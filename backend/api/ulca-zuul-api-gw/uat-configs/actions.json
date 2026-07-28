@@ -33,14 +33,6 @@
       "description": "API to fetch user searches by user id"
     },
     {
-      "id": "f47a4ebf-f2d3-4496-beab-062ef2a318d2",
-      "uri": "/ulca/apis/v0/model/getModelsPipeline",
-      "module": "ULCA-API-MODEL",
-      "active": true,
-      "whiteList": true,
-      "description": "API to fetch tasks pipeline"
-    },
-    {
       "id": "a854ad66-00f3-4d05-983c-2bcdbab6562c",
       "uri": "/ulca/apis/v0/dataset/getByServiceRequestNumber",
       "module": "ULCA-API",
@@ -94,7 +86,7 @@
       "module": "ULCA-UMS",
       "active": true,
       "whiteList": false,
-      "description": "API to revoke user api key"
+      "description": "API to revoke one user api key"
     },
     {
       "id": "77c40961-eb6f-4b60-9aaf-f5da50b9a718",
@@ -199,6 +191,14 @@
       "active": true,
       "whiteList": true,
       "description": "API to fetch models"
+    },
+    {
+      "id": "f47a4ebf-f2d3-4496-beab-062ef2a318d2",
+      "uri": "/ulca/apis/v0/model/getModelsPipeline",
+      "module": "ULCA-API-MODEL",
+      "active": true,
+      "whiteList": true,
+      "description": "API to fetch tasks pipeline"
     },
     {
       "id": "a4c9f08d-0968-403d-ab1f-008b1b1aff44",
@@ -353,6 +353,38 @@
       "description": "API to fetch pre calculated ETAs"
     },
     {
+      "id": "939d5109-c3c5-466c-b1cf-6810c1f182d8",
+      "uri": "/ulca/data-metric/v0/store/reportdata",
+      "module": "ULCA-METRICS",
+      "active": true,
+      "whiteList": true,
+      "description": "API to fetch reports on ULCA"
+    },
+    {
+      "id": "fb876483-130d-4674-8371-00ed262c9be3",
+      "uri": "/ulca/apis/v0/dataset/getByDatasetId",
+      "module": "ULCA-API",
+      "active": true,
+      "whiteList": false,
+      "description": "API to get datasets by datasetID"
+    },
+    {
+      "id": "4ff88bd8-659a-11ed-abd1-60a5e2472759",
+      "uri": "/ulca/data-metric/v0/store/ai4b",
+      "module": "ULCA-METRICS",
+      "active": true,
+      "whiteList": true,
+      "description": "API to fetch AI4Bharat and Samanantar datasets"
+    },
+    {
+      "id": "6f408f06-659b-11ed-bddf-60a5e2472759",
+      "uri": "/ulca/data-metric/v0/store/ai4bmodels",
+      "module": "ULCA-METRICS",
+      "active": true,
+      "whiteList": true,
+      "description": "API to fetch AI4Bharat Models"
+    },
+    {
       "id": "6703d5c9-0d9b-4f32-9b01-2c07d405ab6a",
       "uri": "/ulca/user-mgmt/v1/users/removeServiceProviderKey",
       "module": "ULCA-UMS",
@@ -410,7 +442,7 @@
     },
     {
       "id": "7cbb0e40-5eb0-4cee-9c5e-26ad5d68c88e",
-      "uri": "/ulca/user-mgmt/v1/users/glossary/fetch",
+      "uri": "/ulca/user-mgmt/v1/users/glossary/fetch-all",
       "module": "ULCA-UMS",
       "active": true,
       "whiteList": false,
@@ -455,6 +487,30 @@
       "active": true,
       "whiteList": true,
       "description": "API to generate service provider api keys"
+    },
+    {
+      "id": "b3374e69-ba5c-43e1-a076-d6110dd54c8c",
+      "uri": "/ulca/user-mgmt/v1/users/activateDeactivateServiceProviderKey",
+      "module": "ULCA-UMS",
+      "active": true,
+      "whiteList": false,
+      "description": "API to activate/deactivate inferneceApiKey."
+    },
+    {
+      "id": "d79d1ba8-8c49-4b54-9e71-8482787d80c8",
+      "uri": "/ulca/user-mgmt/v1/users/onboardingApp/userKeyDetails",
+      "module": "ULCA-UMS",
+      "active": true,
+      "whiteList": true,
+      "description": "API to retrieve user key details."
+    },
+    {
+      "id": "105dd625-73e9-465c-9bdc-a283a2e0ca18",
+      "uri": "/ulca/user-mgmt/v1/users/onboardingApp/userDetails",
+      "module": "ULCA-UMS",
+      "active": true,
+      "whiteList": true,
+      "description": "API to retrieve user's all details."
     }
   ]
 }

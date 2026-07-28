@@ -24,6 +24,7 @@ class Status(enum.Enum):
     GLOSSARY_CREATION_SUCCESS = {"message" : "Glossary creation is successfull"}
     GLOSSARY_DELETION_SUCCESS = {"message" : "Glossary deletion is successfull"}
     GLOSSARY_FETCH_SUCCESS    =  {"message" : "Glossary fetch is successfull"}
+    SERVICE_PROVIDER_KEY_STATUS_CHANGE_SUCCESS    =   {"message" : "Active status updated successfully."}
 
 
 

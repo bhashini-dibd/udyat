@@ -71,7 +71,7 @@
       "active": true,
       "whiteList": true,
       "description": "API to register"
-    },    
+    },
     {
       "id": "1f5bdbec-c3fb-4596-a87d-b2169ccd7a30",
       "uri": "/ulca/user-mgmt/v1/users/generateApiKey",
@@ -96,7 +96,6 @@
       "whiteList": false,
       "description": "API to get all user api keys"
     },
-
     {
       "id": "6eae39c6-d705-4ee2-9ec6-c2eb445e9f02",
       "uri": "/ulca/user-mgmt/v1/users/verify-user",
@@ -432,42 +431,10 @@
       "active": true,
       "whiteList": false,
       "description": "API to get api keys of users with non existing service provider names"
-    }, 
-    {
-      "id": "d9df89a0-2fc5-44a9-88a7-bc2b48f009fc", 
-      "uri": "/ulca/user-mgmt/v1/users/speakers/enroll", 
-      "module": "ULCA-UMS", 
-      "active": true, 
-      "whiteList": false, 
-      "description": "API to enroll new speaker."
-    }, 
-    {
-      "id": "0768919c-cc93-4790-88d6-eabeb77917f8", 
-      "uri": "/ulca/user-mgmt/v1/users/speakers/verify", 
-      "module": "ULCA-UMS", 
-      "active": true, 
-      "whiteList": false, 
-      "description": "API to verify any speaker by passing Audio input."
-    }, 
-    {
-      "id": "1c6533c2-814a-4fb1-88e6-f91c74e7496a", 
-      "uri": "/ulca/user-mgmt/v1/users/speakers/list", 
-      "module": "ULCA-UMS", 
-      "active": true, 
-      "whiteList": false, 
-      "description": "API to fetch all enrolled speakers for api key."
-    }, 
-    {
-      "id": "ff8bee14-698c-4508-896a-c02333ba154a", 
-      "uri": "/ulca/user-mgmt/v1/users/speakers/delete", 
-      "module": "ULCA-UMS", 
-      "active": true, 
-      "whiteList": false, 
-      "description": "API to delete speaker based on speaker ID value."
     },
     {
       "id": "0b628b1b-2aaa-4952-826d-bd3b3aff871a",
-      "uri": "/sulca/user-mgmt/v1/users/glossary/create",
+      "uri": "/ulca/user-mgmt/v1/users/glossary/create",
       "module": "ULCA-UMS",
       "active": true,
       "whiteList": false,
@@ -520,6 +487,30 @@
       "active": true,
       "whiteList": true,
       "description": "API to generate service provider api keys"
+    },
+    {
+      "id": "b3374e69-ba5c-43e1-a076-d6110dd54c8c",
+      "uri": "/ulca/user-mgmt/v1/users/activateDeactivateServiceProviderKey",
+      "module": "ULCA-UMS",
+      "active": true,
+      "whiteList": false,
+      "description": "API to activate/deactivate inferneceApiKey."
+    },
+    {
+      "id": "d79d1ba8-8c49-4b54-9e71-8482787d80c8",
+      "uri": "/ulca/user-mgmt/v1/users/onboardingApp/userKeyDetails",
+      "module": "ULCA-UMS",
+      "active": true,
+      "whiteList": true,
+      "description": "API to retrieve user key details."
+    },
+    {
+      "id": "105dd625-73e9-465c-9bdc-a283a2e0ca18",
+      "uri": "/ulca/user-mgmt/v1/users/onboardingApp/userDetails",
+      "module": "ULCA-UMS",
+      "active": true,
+      "whiteList": true,
+      "description": "API to retrieve user's all details."
     }
   ]
 }

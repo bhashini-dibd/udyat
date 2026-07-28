@@ -5,7 +5,7 @@ namespace: dataset-download
 
 resources:
   - ../../base
-  - service.yaml        
+       
 
 patchesStrategicMerge:
   - deployment.yaml     
