@@ -63,6 +63,8 @@ public enum SupportedLanguages {
     GON("gon"),
     HOC("hoc"),
     XNR("xnr"),
+    BHB("bhb"),
+    BGC("bgc"),
     MIXED("mixed"),
     UNKNOWN("unknown");
 
