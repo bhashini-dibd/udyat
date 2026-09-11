@@ -52,6 +52,9 @@ public class TTSRequestConfig   {
 
   @JsonProperty("duration")
   private BigDecimal duration = null;
+  
+  @JsonProperty("serviceId")
+  private String serviceId = null;
 
   public TTSRequestConfig modelId(String modelId) {
     this.modelId = modelId;
@@ -253,8 +256,16 @@ public class TTSRequestConfig   {
   public void setDuration(BigDecimal duration) {
     this.duration = duration;
   }
+     
+    
+     public String getServiceId() {
+	        return serviceId;
+	  }
 
-
+	  public void setServiceId(String serviceId) {
+	    this.serviceId = serviceId;
+	  }
+  
   @Override
   public boolean equals(java.lang.Object o) {
     if (this == o) {
@@ -273,12 +284,13 @@ public class TTSRequestConfig   {
         Objects.equals(this.bitsPerSample, ttSRequestConfig.bitsPerSample) &&
         Objects.equals(this.encoding, ttSRequestConfig.encoding) &&
         Objects.equals(this.speed, ttSRequestConfig.speed) &&
-        Objects.equals(this.duration, ttSRequestConfig.duration);
+        Objects.equals(this.duration, ttSRequestConfig.duration)&&
+        Objects.equals(this.serviceId, ttSRequestConfig.serviceId);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(modelId, language, gender, audioFormat, channel, samplingRate, bitsPerSample, encoding, speed, duration);
+    return Objects.hash(modelId, language, gender, audioFormat, channel, samplingRate, bitsPerSample, encoding, speed, duration,serviceId);
   }
 
   @Override
@@ -296,6 +308,7 @@ public class TTSRequestConfig   {
     sb.append("    encoding: ").append(toIndentedString(encoding)).append("\n");
     sb.append("    speed: ").append(toIndentedString(speed)).append("\n");
     sb.append("    duration: ").append(toIndentedString(duration)).append("\n");
+    sb.append("    serviceId: ").append(toIndentedString(serviceId)).append("\n");
     sb.append("}");
     return sb.toString();
   }
