@@ -2873,7 +2873,7 @@ public class ModelService {
 						if (!taskSpecification.getTaskType().name().toLowerCase().equals("ocr")) {
 							modelsMap.put(configSchema.getModelId(), appModelService);
 						} else {
-							if (configSchema.getServiceId().contains("sceneText")) {
+							if (configSchema.getServiceId().contains("sceneText")||configSchema.getServiceId().equals("bhashini/open-source/OCR")) {
 								modelsMap.put(configSchema.getModelId(), appModelService);
 							}
 						}
