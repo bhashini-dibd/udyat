@@ -65,6 +65,7 @@ public enum SupportedLanguages {
     XNR("xnr"),
     BHB("bhb"),
     BGC("bgc"),
+    SAZ("saz"),
     MIXED("mixed"),
     UNKNOWN("unknown");
 
