@@ -511,6 +511,14 @@
       "active": true,
       "whiteList": true,
       "description": "API to retrieve user's all details."
+    },
+    {
+      "id": "94ae5dc1-612b-4048-832d-838c01f47b7d",
+      "uri": "/ulca/user-mgmt/v1/users/transfer-app-keys",
+      "module": "ULCA-UMS",
+      "active": true,
+      "whiteList": false,
+      "description": "API to transfer ownership of user."
     }
   ]
 }
