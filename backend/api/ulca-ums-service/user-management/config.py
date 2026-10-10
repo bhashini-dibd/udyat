@@ -82,3 +82,6 @@ BHAHSINI_SPEAKER_VERIFICATION_URL = os.environ.get('DHRUVA_SPEAKER_VERIFICATION_
 BHAHSINI_SPEAKER_DELETE_URL = os.environ.get('DHRUVA_SPEAKER_DELETE_ENDPOINT',"https://dhruva-api.bhashini.gov.in/services/inference/speakers/delete")
 BHAHSINI_SPEAKER_FETCH_URL = os.environ.get('DHRUVA_SPEAKER_FETCH_ENDPOINT',"https://dhruva-api.bhashini.gov.in/services/inference/speakers/list")
 MEITY_SERVICE_PROVIDER_NAME = "MeitY"
+# === TRANSFER-APP-KEYS-FEATURE START (remove this line to revert) ===
+DHRUVA_TRANSFER_APP_KEYS_URL = os.environ.get('DHRUVA_TRANSFER_APP_KEYS_ENDPOINT',"https://dhruva-api.bhashini.gov.in/auth/api-key/ulca/transfer")
+# === TRANSFER-APP-KEYS-FEATURE END ===
