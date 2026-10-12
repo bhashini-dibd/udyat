@@ -951,18 +951,18 @@ class ActivateDeactivateServiceProviderKey(Resource):
 class TransferAppKeys(Resource):
     def post(self):
         body = request.get_json()
-        log.info(f"[TransferAppKeys] API request received :: body={body}")
+        print(f"[TransferAppKeys] API request received :: body={body}", flush=True)
         if not isinstance(body, dict):
-            log.error("[TransferAppKeys] API request rejected :: body is missing or not a JSON object")
+            print("[TransferAppKeys] API request rejected :: body is missing or not a JSON object", flush=True)
             return post_error("400", "Request body must be a JSON object", None), 400
         for field in ("sourceEmail", "destinationEmail", "appNames"):
             if field not in body.keys():
-                log.error(f"[TransferAppKeys] API request rejected :: missing field {field}")
+                print(f"[TransferAppKeys] API request rejected :: missing field {field}", flush=True)
                 return post_error("400", f"Please provide {field}", None), 400
 
         result, statusCode = UserUtils.transfer_app_keys(
             body["sourceEmail"], body["destinationEmail"], body["appNames"]
         )
-        log.info(f"[TransferAppKeys] API response sent :: status={statusCode} response={result}")
+        print(f"[TransferAppKeys] API response sent :: status={statusCode} response={result}", flush=True)
         return result, statusCode
 # === TRANSFER-APP-KEYS-FEATURE END ===

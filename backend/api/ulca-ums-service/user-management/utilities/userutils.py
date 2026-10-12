@@ -51,6 +51,7 @@ import base64
 import sys
 import os
 import logging
+import traceback
 
 
 log = logging.getLogger('file')
@@ -782,7 +783,7 @@ class UserUtils:
         """Fetch a single user document by email."""
         coll = db.get_db()[USR_MONGO_COLLECTION]
         userDoc = coll.find_one({"email": email})
-        log.info(f"[TransferAppKeys] get_user_by_email :: email={email} found={bool(userDoc)}")
+        print(f"[TransferAppKeys] get_user_by_email :: email={email} found={bool(userDoc)}", flush=True)
         return userDoc
 
     @staticmethod
@@ -792,8 +793,8 @@ class UserUtils:
         found = [entry for entry in existingEntries if entry.get("appName") in appNames]
         foundNames = [entry.get("appName") for entry in found]
         missing = [name for name in appNames if name not in foundNames]
-        log.info(f"[TransferAppKeys] extract_appkey_entries :: existingAppNames={[e.get('appName') for e in existingEntries]} "
-                 f"requested={appNames} found={foundNames} missing={missing}")
+        print(f"[TransferAppKeys] extract_appkey_entries :: existingAppNames={[e.get('appName') for e in existingEntries]} "
+                 f"requested={appNames} found={foundNames} missing={missing}", flush=True)
         return found, missing
 
     @staticmethod
@@ -802,8 +803,8 @@ class UserUtils:
         existingEntries = userDoc.get("apiKeyDetails", []) if userDoc else []
         existingNames = [entry.get("appName") for entry in existingEntries]
         duplicates = [name for name in appNames if name in existingNames]
-        log.info(f"[TransferAppKeys] get_duplicate_appNames :: destinationAppNames={existingNames} "
-                 f"requested={appNames} duplicates={duplicates}")
+        print(f"[TransferAppKeys] get_duplicate_appNames :: destinationAppNames={existingNames} "
+                 f"requested={appNames} duplicates={duplicates}", flush=True)
         return duplicates
 
     @staticmethod
@@ -811,8 +812,8 @@ class UserUtils:
         """Check destination user won't exceed MAX_API_KEY after adding numNewKeys entries."""
         existingEntries = userDoc.get("apiKeyDetails", []) if userDoc else []
         hasCapacity = (len(existingEntries) + numNewKeys) <= MAX_API_KEY
-        log.info(f"[TransferAppKeys] has_capacity_for_keys :: existingKeys={len(existingEntries)} "
-                 f"newKeys={numNewKeys} maxAllowed={MAX_API_KEY} hasCapacity={hasCapacity}")
+        print(f"[TransferAppKeys] has_capacity_for_keys :: existingKeys={len(existingEntries)} "
+                 f"newKeys={numNewKeys} maxAllowed={MAX_API_KEY} hasCapacity={hasCapacity}", flush=True)
         return hasCapacity
 
     @staticmethod
@@ -823,7 +824,7 @@ class UserUtils:
             {"email": email},
             {"$pull": {"apiKeyDetails": {"appName": {"$in": appNames}}}}
         )
-        log.info(f"[TransferAppKeys] remove_appkeys_by_email :: email={email} appNames={appNames} mongoResult={result}")
+        print(f"[TransferAppKeys] remove_appkeys_by_email :: email={email} appNames={appNames} mongoResult={result}", flush=True)
         return result
 
     @staticmethod
@@ -834,8 +835,8 @@ class UserUtils:
             {"email": email},
             {"$push": {"apiKeyDetails": {"$each": entries}}}
         )
-        log.info(f"[TransferAppKeys] add_appkeys_by_email :: email={email} "
-                 f"appNames={[e.get('appName') for e in entries]} mongoResult={result}")
+        print(f"[TransferAppKeys] add_appkeys_by_email :: email={email} "
+                 f"appNames={[e.get('appName') for e in entries]} mongoResult={result}", flush=True)
         return result
 
     @staticmethod
@@ -844,12 +845,12 @@ class UserUtils:
         Transfer appNames ownership in Dhruva using MeitY pipeline's master key.
         Returns (dhruvaResponseBody, statusCode).
         """
-        log.info(f"[TransferAppKeys] Dhruva :: fetching pipeline for serviceProvider={MEITY_SERVICE_PROVIDER_NAME}")
+        print(f"[TransferAppKeys] Dhruva :: fetching pipeline for serviceProvider={MEITY_SERVICE_PROVIDER_NAME}", flush=True)
         pipeline = UserUtils.get_pipelineIdbyServiceProviderName(MEITY_SERVICE_PROVIDER_NAME)
         if not isinstance(pipeline, dict) or not pipeline:
-            log.error(f"[TransferAppKeys] Dhruva :: FAILED - pipeline not found for serviceProvider={MEITY_SERVICE_PROVIDER_NAME}")
+            print(f"[TransferAppKeys] Dhruva :: FAILED - pipeline not found for serviceProvider={MEITY_SERVICE_PROVIDER_NAME}", flush=True)
             return post_error("400", "MeitY pipeline does not exist", None), 400
-        log.info(f"[TransferAppKeys] Dhruva :: pipeline found, pipelineId={pipeline.get('_id')}")
+        print(f"[TransferAppKeys] Dhruva :: pipeline found, pipelineId={pipeline.get('_id')}", flush=True)
 
         masterList = [
             pipeline["inferenceEndPoint"]["masterApiKey"]["name"],
@@ -857,20 +858,20 @@ class UserUtils:
         ]
         headers = UserUtils.decryptAes(SECRET_KEY, masterList)
         # log only header names, never the decrypted master key value
-        log.info(f"[TransferAppKeys] Dhruva :: master key decrypted, authHeaderNames={list(headers.keys())}")
+        print(f"[TransferAppKeys] Dhruva :: master key decrypted, authHeaderNames={list(headers.keys())}", flush=True)
         headers["Content-Type"] = "application/json"
 
         body = {"sourceEmail": sourceEmail, "destinationEmail": destinationEmail, "appNames": appNames}
-        log.info(f"[TransferAppKeys] Dhruva :: sending POST url={DHRUVA_TRANSFER_APP_KEYS_URL} body={body}")
+        print(f"[TransferAppKeys] Dhruva :: sending POST url={DHRUVA_TRANSFER_APP_KEYS_URL} body={body}", flush=True)
         startTime = time.time()
         result = requests.post(url=DHRUVA_TRANSFER_APP_KEYS_URL, headers=headers, json=body)
         elapsedMs = int((time.time() - startTime) * 1000)
-        log.info(f"[TransferAppKeys] Dhruva :: response received in {elapsedMs}ms status={result.status_code} body={result.text}")
+        print(f"[TransferAppKeys] Dhruva :: response received in {elapsedMs}ms status={result.status_code} body={result.text}", flush=True)
 
         try:
             return result.json(), result.status_code
         except ValueError:
-            log.warning("[TransferAppKeys] Dhruva :: response is not JSON, returning raw text")
+            print("[TransferAppKeys] Dhruva :: response is not JSON, returning raw text", flush=True)
             return result.text, result.status_code
 
     @staticmethod
@@ -882,74 +883,74 @@ class UserUtils:
         Returns (responseBody, statusCode).
         """
         tag = f"[TransferAppKeys] source={sourceEmail} destination={destinationEmail} appNames={appNames}"
-        log.info(f"{tag} :: ===== transfer STARTED =====")
+        print(f"{tag} :: ===== transfer STARTED =====", flush=True)
         try:
-            log.info(f"{tag} :: Step 1/9 - checking source and destination are different")
+            print(f"{tag} :: Step 1/9 - checking source and destination are different", flush=True)
             if sourceEmail == destinationEmail:
-                log.error(f"{tag} :: Step 1/9 FAILED - sourceEmail and destinationEmail are the same")
+                print(f"{tag} :: Step 1/9 FAILED - sourceEmail and destinationEmail are the same", flush=True)
                 return post_error("400", "sourceEmail and destinationEmail cannot be the same", None), 400
 
-            log.info(f"{tag} :: Step 2/9 - validating appNames is a non-empty list")
+            print(f"{tag} :: Step 2/9 - validating appNames is a non-empty list", flush=True)
             if not isinstance(appNames, list) or len(appNames) == 0:
-                log.error(f"{tag} :: Step 2/9 FAILED - appNames is not a non-empty list, type={type(appNames).__name__}")
+                print(f"{tag} :: Step 2/9 FAILED - appNames is not a non-empty list, type={type(appNames).__name__}", flush=True)
                 return post_error("400", "appNames must be a non-empty list", None), 400
 
-            log.info(f"{tag} :: Step 3/9 - fetching source user")
+            print(f"{tag} :: Step 3/9 - fetching source user", flush=True)
             sourceUser = UserUtils.get_user_by_email(sourceEmail)
             if not sourceUser:
-                log.error(f"{tag} :: Step 3/9 FAILED - sourceEmail is not a registered user")
+                print(f"{tag} :: Step 3/9 FAILED - sourceEmail is not a registered user", flush=True)
                 return post_error("400", "sourceEmail is not a registered user", None), 400
 
-            log.info(f"{tag} :: Step 4/9 - fetching destination user")
+            print(f"{tag} :: Step 4/9 - fetching destination user", flush=True)
             destinationUser = UserUtils.get_user_by_email(destinationEmail)
             if not destinationUser:
-                log.error(f"{tag} :: Step 4/9 FAILED - destinationEmail is not a registered user")
+                print(f"{tag} :: Step 4/9 FAILED - destinationEmail is not a registered user", flush=True)
                 return post_error("400", "destinationEmail is not a registered user", None), 400
 
-            log.info(f"{tag} :: Step 5/9 - checking appNames exist for source user")
+            print(f"{tag} :: Step 5/9 - checking appNames exist for source user", flush=True)
             entriesToMove, missingAppNames = UserUtils.extract_appkey_entries(sourceUser, appNames)
             if missingAppNames:
-                log.error(f"{tag} :: Step 5/9 FAILED - appNames not found for source: {missingAppNames}")
+                print(f"{tag} :: Step 5/9 FAILED - appNames not found for source: {missingAppNames}", flush=True)
                 return post_error("400", f"appName(s) not found for sourceEmail: {missingAppNames}", None), 400
 
-            log.info(f"{tag} :: Step 6/9 - checking appNames do not already exist for destination user")
+            print(f"{tag} :: Step 6/9 - checking appNames do not already exist for destination user", flush=True)
             duplicateAppNames = UserUtils.get_duplicate_appNames(destinationUser, appNames)
             if duplicateAppNames:
-                log.error(f"{tag} :: Step 6/9 FAILED - appNames already exist for destination: {duplicateAppNames}")
+                print(f"{tag} :: Step 6/9 FAILED - appNames already exist for destination: {duplicateAppNames}", flush=True)
                 return post_error("400", f"appName(s) already exist for destinationEmail: {duplicateAppNames}", None), 400
 
-            log.info(f"{tag} :: Step 7/9 - checking destination user key limit")
+            print(f"{tag} :: Step 7/9 - checking destination user key limit", flush=True)
             if not UserUtils.has_capacity_for_keys(destinationUser, len(entriesToMove)):
-                log.error(f"{tag} :: Step 7/9 FAILED - destination would exceed MAX_API_KEY={MAX_API_KEY}")
+                print(f"{tag} :: Step 7/9 FAILED - destination would exceed MAX_API_KEY={MAX_API_KEY}", flush=True)
                 return post_error("400", "Maximum Key Limit Reached for destinationEmail", None), 400
 
-            log.info(f"{tag} :: Step 8/9 - all validations passed, calling Dhruva transfer API")
+            print(f"{tag} :: Step 8/9 - all validations passed, calling Dhruva transfer API", flush=True)
             dhruvaResponse, dhruvaStatus = UserUtils.transfer_app_keys_in_dhruva(sourceEmail, destinationEmail, appNames)
             if dhruvaStatus != 200:
-                log.error(f"{tag} :: Step 8/9 FAILED - Dhruva returned status={dhruvaStatus} response={dhruvaResponse}. "
-                          f"Database NOT modified, returning Dhruva error to client")
+                print(f"{tag} :: Step 8/9 FAILED - Dhruva returned status={dhruvaStatus} response={dhruvaResponse}. "
+                          f"Database NOT modified, returning Dhruva error to client", flush=True)
                 return dhruvaResponse, dhruvaStatus
-            log.info(f"{tag} :: Step 8/9 SUCCESS - Dhruva transfer done")
+            print(f"{tag} :: Step 8/9 SUCCESS - Dhruva transfer done", flush=True)
 
-            log.info(f"{tag} :: Step 9/9 - updating database (remove from source, add to destination)")
+            print(f"{tag} :: Step 9/9 - updating database (remove from source, add to destination)", flush=True)
             pullResult = UserUtils.remove_appkeys_by_email(sourceEmail, appNames)
             if pullResult.get("nModified") != 1:
-                log.error(f"{tag} :: Step 9/9 FAILED - could not remove appNames from source, mongoResult={pullResult}. "
-                          f"WARNING: Dhruva already transferred, Dhruva and database are now OUT OF SYNC")
+                print(f"{tag} :: Step 9/9 FAILED - could not remove appNames from source, mongoResult={pullResult}. "
+                          f"WARNING: Dhruva already transferred, Dhruva and database are now OUT OF SYNC", flush=True)
                 return post_error("400", "Unable to remove appName(s) from sourceEmail", None), 400
-            log.info(f"{tag} :: Step 9/9 - removed appNames from source")
+            print(f"{tag} :: Step 9/9 - removed appNames from source", flush=True)
 
             pushResult = UserUtils.add_appkeys_by_email(destinationEmail, entriesToMove)
             if pushResult.get("nModified") != 1:
-                log.error(f"{tag} :: Step 9/9 FAILED - could not add appNames to destination, mongoResult={pushResult}. "
-                          f"Rolling back database entries to source")
+                print(f"{tag} :: Step 9/9 FAILED - could not add appNames to destination, mongoResult={pushResult}. "
+                          f"Rolling back database entries to source", flush=True)
                 rollbackResult = UserUtils.add_appkeys_by_email(sourceEmail, entriesToMove)
-                log.error(f"{tag} :: Step 9/9 rollback mongoResult={rollbackResult}. "
-                          f"WARNING: Dhruva already transferred, Dhruva and database are now OUT OF SYNC")
+                print(f"{tag} :: Step 9/9 rollback mongoResult={rollbackResult}. "
+                          f"WARNING: Dhruva already transferred, Dhruva and database are now OUT OF SYNC", flush=True)
                 return post_error("400", "Unable to add appName(s) to destinationEmail, transfer rolled back", None), 400
-            log.info(f"{tag} :: Step 9/9 - added appNames to destination")
+            print(f"{tag} :: Step 9/9 - added appNames to destination", flush=True)
 
-            log.info(f"{tag} :: ===== transfer COMPLETED SUCCESSFULLY =====")
+            print(f"{tag} :: ===== transfer COMPLETED SUCCESSFULLY =====", flush=True)
             res = CustomResponse(Status.SUCCESS.value, {
                 "appNames": appNames,
                 "sourceEmail": sourceEmail,
@@ -958,7 +959,8 @@ class UserUtils:
             return res.getresjson(), 200
 
         except Exception as e:
-            log.exception(f"{tag} :: ===== transfer FAILED with exception: {str(e)} =====")
+            print(f"{tag} :: ===== transfer FAILED with exception: {str(e)} =====", flush=True)
+            traceback.print_exc()
             return post_error("Database exception", f"Exception occurred: {str(e)}", None), 400
     # === TRANSFER-APP-KEYS-FEATURE END ===
 
