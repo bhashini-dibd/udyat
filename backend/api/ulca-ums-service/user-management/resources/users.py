@@ -947,6 +947,50 @@ class ActivateDeactivateServiceProviderKey(Resource):
             return post_error("400", "Unable to change status of active at the moment, please try again", None), 400
 
 
+# === ONBOARDING-APP-USER-LISTS-FEATURE START (remove this whole block to revert) ===
+USER_LISTS_DEFAULT_LIMIT = 50
+USER_LISTS_MAX_LIMIT = 500
+
+class OnboardingAppUserLists(Resource):
+    def get(self):
+        authorization_header = request.headers.get("Authorization")
+        if authorization_header != ONBOARDING_AUTH_HEADER:
+            print("[OnboardingAppUserLists] request rejected :: invalid Authorization header", flush=True)
+            return post_error("Data Missing", "Unauthorized to perform this operation", None), 401
+
+        page = request.args.get("page", 1)
+        limit = request.args.get("limit", USER_LISTS_DEFAULT_LIMIT)
+        print(f"[OnboardingAppUserLists] request received :: page={page} limit={limit}", flush=True)
+        try:
+            page = int(page)
+            limit = int(limit)
+        except (TypeError, ValueError):
+            print(f"[OnboardingAppUserLists] request rejected :: page/limit not integers, page={page} limit={limit}", flush=True)
+            return post_error("400", "page and limit must be integers", None), 400
+        if page < 1 or limit < 1 or limit > USER_LISTS_MAX_LIMIT:
+            print(f"[OnboardingAppUserLists] request rejected :: page/limit out of range, page={page} limit={limit}", flush=True)
+            return post_error("400", f"page must be >= 1 and limit must be between 1 and {USER_LISTS_MAX_LIMIT}", None), 400
+
+        try:
+            records, totalCount = UserUtils.get_all_service_provider_keys(page, limit)
+            totalPages = (totalCount + limit - 1) // limit
+            print(f"[OnboardingAppUserLists] fetched {len(records)} record(s) :: page={page}/{totalPages} totalCount={totalCount}", flush=True)
+            data = {
+                "page": page,
+                "limit": limit,
+                "totalCount": totalCount,
+                "totalPages": totalPages,
+                "records": records
+            }
+            res = CustomResponse(Status.SUCCESS_GET_APIKEY.value, normalize_bson_to_json(data))
+            return res.getresjson(), 200
+        except Exception as e:
+            print(f"[OnboardingAppUserLists] FAILED with exception: {str(e)}", flush=True)
+            log.exception("Database connection exception | {} ".format(str(e)))
+            return post_error("Database  exception", "An error occurred while processing on the database:{}".format(str(e)), None), 400
+# === ONBOARDING-APP-USER-LISTS-FEATURE END ===
+
+
 # === TRANSFER-APP-KEYS-FEATURE START (remove this whole block to revert) ===
 class TransferAppKeys(Resource):
     def post(self):
