@@ -786,13 +786,16 @@ class UserUtils:
         return None
 
     @staticmethod
-    def get_all_service_provider_keys(page, limit):
+    def get_all_service_provider_keys(page, limit, email=None):
         """
         Return (records, totalCount): one flat record per serviceProviderKeys entry that has an
-        inferenceApiKey.value, across all users, for the requested page.
+        inferenceApiKey.value, across all users (or only the user with the given email), for the requested page.
         """
         coll = db.get_db()[USR_MONGO_COLLECTION]
-        pipeline = [
+        pipeline = []
+        if email:
+            pipeline.append({"$match": {"email": email}})
+        pipeline += [
             {"$unwind": "$apiKeyDetails"},
             {"$unwind": "$apiKeyDetails.serviceProviderKeys"},
             {"$match": {"apiKeyDetails.serviceProviderKeys.inferenceApiKey.value": {"$exists": True, "$nin": [None, ""]}}},

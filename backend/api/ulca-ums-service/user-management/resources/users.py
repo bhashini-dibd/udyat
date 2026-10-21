@@ -960,7 +960,8 @@ class OnboardingAppUserLists(Resource):
 
         page = request.args.get("page", 1)
         limit = request.args.get("limit", USER_LISTS_DEFAULT_LIMIT)
-        print(f"[OnboardingAppUserLists] request received :: page={page} limit={limit}", flush=True)
+        email = (request.args.get("email") or "").strip() or None
+        print(f"[OnboardingAppUserLists] request received :: page={page} limit={limit} email={email}", flush=True)
         try:
             page = int(page)
             limit = int(limit)
@@ -972,9 +973,9 @@ class OnboardingAppUserLists(Resource):
             return post_error("400", f"page must be >= 1 and limit must be between 1 and {USER_LISTS_MAX_LIMIT}", None), 400
 
         try:
-            records, totalCount = UserUtils.get_all_service_provider_keys(page, limit)
+            records, totalCount = UserUtils.get_all_service_provider_keys(page, limit, email)
             totalPages = (totalCount + limit - 1) // limit
-            print(f"[OnboardingAppUserLists] fetched {len(records)} record(s) :: page={page}/{totalPages} totalCount={totalCount}", flush=True)
+            print(f"[OnboardingAppUserLists] fetched {len(records)} record(s) :: email={email} page={page}/{totalPages} totalCount={totalCount}", flush=True)
             data = {
                 "page": page,
                 "limit": limit,
