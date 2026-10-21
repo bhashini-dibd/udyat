@@ -780,7 +780,10 @@ class UserUtils:
         e.g. '10-Jun-2025 01:13:33 PM UTC'; None if not set (e.g. activatedTime=0).
         """
         if isinstance(value, str) and value.isdigit():
-            value = datetime.fromtimestamp(int(value), timezone.utc)
+            value = int(value)
+        if isinstance(value, (int, float)) and not isinstance(value, bool) and value > 0:
+            # epoch-millis values are 13 digits; bring them down to seconds
+            value = datetime.fromtimestamp(value / 1000 if value > 100000000000 else value, timezone.utc)
         if isinstance(value, datetime):
             return value.strftime("%d-%b-%Y %I:%M:%S %p UTC")
         return None
@@ -799,8 +802,15 @@ class UserUtils:
             {"$unwind": "$apiKeyDetails"},
             {"$unwind": "$apiKeyDetails.serviceProviderKeys"},
             {"$match": {"apiKeyDetails.serviceProviderKeys.inferenceApiKey.value": {"$exists": True, "$nin": [None, ""]}}},
-            # latest created key first; createdTimestamp is a 10-digit epoch-seconds string, so string order == time order
-            {"$sort": {"apiKeyDetails.createdTimestamp": -1, "_id": 1, "apiKeyDetails.appName": 1}},
+            # latest created key first. createdTimestamp is not stored in one format everywhere (epoch-seconds string,
+            # number, epoch-millis or date) and Mongo sorts by BSON type before value, so normalise it to epoch seconds
+            # (number) first; values that cannot be converted become null and go last.
+            {"$addFields": {"createdTsSeconds": {"$let": {
+                "vars": {"ts": {"$convert": {"input": "$apiKeyDetails.createdTimestamp", "to": "double",
+                                             "onError": None, "onNull": None}}},
+                "in": {"$cond": [{"$gt": ["$$ts", 100000000000]}, {"$divide": ["$$ts", 1000]}, "$$ts"]}
+            }}}},
+            {"$sort": {"createdTsSeconds": -1, "_id": 1, "apiKeyDetails.appName": 1}},
             {"$project": {
                 "_id": 0,
                 "userID": 1,
