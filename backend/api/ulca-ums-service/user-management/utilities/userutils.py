@@ -792,12 +792,14 @@ class UserUtils:
     def get_all_service_provider_keys(page, limit, email=None):
         """
         Return (records, totalCount): one flat record per serviceProviderKeys entry that has an
-        inferenceApiKey.value, across all users (or only the user with the given email), for the requested page.
+        inferenceApiKey.value, across all users (or only users whose email contains the given text,
+        case-insensitive), for the requested page.
         """
         coll = db.get_db()[USR_MONGO_COLLECTION]
         pipeline = []
         if email:
-            pipeline.append({"$match": {"email": email}})
+            # partial, case-insensitive match; escape so characters like '.' or '+' are matched literally
+            pipeline.append({"$match": {"email": {"$regex": re.escape(email), "$options": "i"}}})
         pipeline += [
             {"$unwind": "$apiKeyDetails"},
             {"$unwind": "$apiKeyDetails.serviceProviderKeys"},
