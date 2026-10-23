@@ -24,6 +24,12 @@ from .users import (
     RemoveServiceProviderKeyWithoutLogin, 
     OnboardingAppUserDetails,
     OnboardingAppUserKeyDetails,
-    ActivateDeactivateServiceProviderKey
+    ActivateDeactivateServiceProviderKey,
+    # === ONBOARDING-APP-USER-LISTS-FEATURE START (remove this line to revert) ===
+    OnboardingAppUserLists,
+    # === ONBOARDING-APP-USER-LISTS-FEATURE END ===
+    # === TRANSFER-APP-KEYS-FEATURE START (remove this line to revert) ===
+    TransferAppKeys
+    # === TRANSFER-APP-KEYS-FEATURE END ===
     )
 from .user_auth import UserLogin, UserLogout, ApiKeySearch, ForgotPassword, ResetPassword, VerifyUser, ActivateDeactivateUser, VerifyToken
