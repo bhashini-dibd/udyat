@@ -536,14 +536,6 @@
       "whiteList": true,
       "description": "API to fetch user key details"
     },
-    {
-      "id": "ef82ada1-efee-472f-bba2-051fc728fad9",
-      "uri": "/ulca/user-mgmt/v1/users/onboardingApp/userLists",
-      "module": "ULCA-UMS",
-      "active": true,
-      "whiteList": true,
-      "description": "API to fetch list of users available"
-    },
    {
       "id": "ec3132a7-7432-4be8-91fa-9968e813cc6b",
       "uri": "/ulca/apis/v0/model/getModelsAllPipelineWithScript",
@@ -559,6 +551,22 @@
       "active": true,
       "whiteList": false,
       "description": "API to activate/deactivate inferneceApiKey."
+    },
+    {
+      "id": "94ae5dc1-612b-4048-832d-838c01f47b7d",
+      "uri": "/ulca/user-mgmt/v1/users/transfer-app-keys",
+      "module": "ULCA-UMS",
+      "active": true,
+      "whiteList": false,
+      "description": "API to transfer ownership of user."
+    },
+    {
+      "id": "ef82ada1-efee-472f-bba2-051fc728fad9",
+      "uri": "/ulca/user-mgmt/v1/users/onboardingApp/userLists",
+      "module": "ULCA-UMS",
+      "active": true,
+      "whiteList": true,
+      "description": "API to fetch list of users available"
     }
    
   ]
