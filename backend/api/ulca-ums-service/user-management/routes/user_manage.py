@@ -28,6 +28,9 @@ from resources import (
     OnboardingAppUserDetails,
     OnboardingAppUserKeyDetails,
     ActivateDeactivateServiceProviderKey,
+    # === ONBOARDING-APP-USER-LISTS-FEATURE START (remove this line to revert) ===
+    OnboardingAppUserLists,
+    # === ONBOARDING-APP-USER-LISTS-FEATURE END ===
     # === TRANSFER-APP-KEYS-FEATURE START (remove this line to revert) ===
     TransferAppKeys
     # === TRANSFER-APP-KEYS-FEATURE END ===
@@ -142,6 +145,12 @@ Api(USER_MANAGEMENT_BLUEPRINT).add_resource(
 Api(USER_MANAGEMENT_BLUEPRINT).add_resource(
     ActivateDeactivateServiceProviderKey, "/v1/users/activateDeactivateServiceProviderKey"
 )
+
+# === ONBOARDING-APP-USER-LISTS-FEATURE START (remove this block to revert) ===
+Api(USER_MANAGEMENT_BLUEPRINT).add_resource(
+    OnboardingAppUserLists, "/v1/users/onboardingApp/userLists"
+)
+# === ONBOARDING-APP-USER-LISTS-FEATURE END ===
 
 # === TRANSFER-APP-KEYS-FEATURE START (remove this block to revert) ===
 Api(USER_MANAGEMENT_BLUEPRINT).add_resource(

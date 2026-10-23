@@ -19,7 +19,7 @@ from utilities import MODULE_CONTEXT
 from .app_enums import EnumVals
 import config
 import json
-from datetime import datetime,timedelta
+from datetime import datetime,timedelta,timezone
 import requests
 from flask_mail import Mail, Message
 from app import mail
@@ -771,6 +771,77 @@ class UserUtils:
         #     spk = serviceProviderKey
         details = collection.update({"userID":user}, {"$push": {"apiKeyDetails":{"appName":appName,"ulcaApiKey":apikey,"createdTimestamp":str(int(time.time())),"serviceProviderKeys":serviceProviderKey}}})
         return details
+
+    # === ONBOARDING-APP-USER-LISTS-FEATURE START (remove this whole block to revert) ===
+    @staticmethod
+    def format_readable_time(value):
+        """
+        Convert a stored UTC datetime or epoch-seconds string (createdTimestamp) to
+        e.g. '10-Jun-2025 01:13:33 PM UTC'; None if not set (e.g. activatedTime=0).
+        """
+        if isinstance(value, str) and value.isdigit():
+            value = int(value)
+        if isinstance(value, (int, float)) and not isinstance(value, bool) and value > 0:
+            # epoch-millis values are 13 digits; bring them down to seconds
+            value = datetime.fromtimestamp(value / 1000 if value > 100000000000 else value, timezone.utc)
+        if isinstance(value, datetime):
+            return value.strftime("%d-%b-%Y %I:%M:%S %p UTC")
+        return None
+
+    @staticmethod
+    def get_all_service_provider_keys(page, limit, email=None):
+        """
+        Return (records, totalCount): one flat record per serviceProviderKeys entry that has an
+        inferenceApiKey.value, across all users (or only users whose email contains the given text,
+        case-insensitive), for the requested page.
+        """
+        coll = db.get_db()[USR_MONGO_COLLECTION]
+        pipeline = []
+        if email:
+            # partial, case-insensitive match; escape so characters like '.' or '+' are matched literally
+            pipeline.append({"$match": {"email": {"$regex": re.escape(email), "$options": "i"}}})
+        pipeline += [
+            {"$unwind": "$apiKeyDetails"},
+            {"$unwind": "$apiKeyDetails.serviceProviderKeys"},
+            {"$match": {"apiKeyDetails.serviceProviderKeys.inferenceApiKey.value": {"$exists": True, "$nin": [None, ""]}}},
+            # latest created key first. createdTimestamp is not stored in one format everywhere (epoch-seconds string,
+            # number, epoch-millis or date) and Mongo sorts by BSON type before value, so normalise it to epoch seconds
+            # (number) first; values that cannot be converted become null and go last.
+            {"$addFields": {"createdTsSeconds": {"$let": {
+                "vars": {"ts": {"$convert": {"input": "$apiKeyDetails.createdTimestamp", "to": "double",
+                                             "onError": None, "onNull": None}}},
+                "in": {"$cond": [{"$gt": ["$$ts", 100000000000]}, {"$divide": ["$$ts", 1000]}, "$$ts"]}
+            }}}},
+            {"$sort": {"createdTsSeconds": -1, "_id": 1, "apiKeyDetails.appName": 1}},
+            {"$project": {
+                "_id": 0,
+                "userID": 1,
+                "email": 1,
+                "registeredTime": 1,
+                "activatedTime": 1,
+                "isVerified": 1,
+                "isActive": 1,
+                "appName": "$apiKeyDetails.appName",
+                "ulcaApiKey": "$apiKeyDetails.ulcaApiKey",
+                "createdTimestamp": "$apiKeyDetails.createdTimestamp",
+                "serviceProviderName": "$apiKeyDetails.serviceProviderKeys.serviceProviderName",
+                "dataTracking": "$apiKeyDetails.serviceProviderKeys.dataTracking",
+                "serviceProviderApiKey": "$apiKeyDetails.serviceProviderKeys.inferenceApiKey.value"
+            }},
+            {"$facet": {
+                "records": [{"$skip": (page - 1) * limit}, {"$limit": limit}],
+                "total": [{"$count": "count"}]
+            }}
+        ]
+        result = list(coll.aggregate(pipeline, allowDiskUse=True))[0]
+        records = result["records"]
+        totalCount = result["total"][0]["count"] if result["total"] else 0
+        for record in records:
+            record["registeredTime"] = UserUtils.format_readable_time(record.get("registeredTime"))
+            record["activatedTime"] = UserUtils.format_readable_time(record.get("activatedTime"))
+            record["createdTimestamp"] = UserUtils.format_readable_time(record.get("createdTimestamp"))
+        return records, totalCount
+    # === ONBOARDING-APP-USER-LISTS-FEATURE END ===
 
     # === TRANSFER-APP-KEYS-FEATURE START (remove this whole block to revert) ===
     # Order of use: get_user_by_email -> extract_appkey_entries -> get_duplicate_appNames
